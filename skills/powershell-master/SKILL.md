@@ -5,38 +5,6 @@ description: "Complete PowerShell expertise system across ALL platforms (Windows
 
 # PowerShell Master
 
-## 🚨 CRITICAL GUIDELINES
-
-### Windows File Path Requirements
-
-**MANDATORY: Always Use Backslashes on Windows for File Paths**
-
-When using Edit or Write tools on Windows, you MUST use backslashes (`\`) in file paths, NOT forward slashes (`/`).
-
-**Examples:**
-- ❌ WRONG: `D:/repos/project/file.tsx`
-- ✅ CORRECT: `D:\repos\project\file.tsx`
-
-This applies to:
-- Edit tool file_path parameter
-- Write tool file_path parameter
-- All file operations on Windows systems
-
-### Documentation Guidelines
-
-**NEVER create new documentation files unless explicitly requested by the user.**
-
-- **Priority**: Update existing README.md files rather than creating new documentation
-- **Repository cleanliness**: Keep repository root clean - only README.md unless user requests otherwise
-- **Style**: Documentation should be concise, direct, and professional - avoid AI-generated tone
-- **User preference**: Only create additional .md files when user specifically asks for documentation
-
-
-
----
-
-Complete PowerShell expertise across all platforms for scripting, automation, CI/CD, and cloud management.
-
 ---
 
 ## 🎯 When to Activate
@@ -221,80 +189,21 @@ git config core.autocrlf true   # Windows
 
 ---
 
-## 📦 Module Management (PSResourceGet & PSGallery)
+## 📦 Module Management
 
-### PSResourceGet - Modern Package Manager (2025)
+> **See `powershell-7.5-features` skill for authoritative PSResourceGet coverage** (installation, search, updates, offline scenarios, performance comparisons).
 
-**PSResourceGet** is 2x faster than PowerShellGet and actively maintained:
-
-```powershell
-# PSResourceGet ships with PowerShell 7.4+ (or install manually)
-Install-Module -Name Microsoft.PowerShell.PSResourceGet -Force
-
-# Modern commands (PSResourceGet)
-Install-PSResource -Name Az -Scope CurrentUser        # 2x faster
-Find-PSResource -Name "*Azure*"                       # Faster search
-Update-PSResource -Name Az                            # Batch updates
-Get-InstalledPSResource                               # List installed
-Uninstall-PSResource -Name OldModule                  # Clean uninstall
-
-# Compatibility: Your old Install-Module commands still work
-# They automatically call PSResourceGet internally
-Install-Module -Name Az -Scope CurrentUser            # Works, uses PSResourceGet
-```
-
-### Finding Modules
+### Quick Reference
 
 ```powershell
-# PSResourceGet (Modern)
+# Modern (recommended)
+Install-PSResource -Name Az -Scope CurrentUser
 Find-PSResource -Name "*Azure*"
-Find-PSResource -Tag "Security"
-Find-PSResource -Name Az | Select-Object Name, Version, PublishedDate
-
-# Legacy PowerShellGet (still works)
-Find-Module -Name "*Azure*"
-Find-Command -Name Get-AzVM
-```
-
-### Installing Modules
-
-```powershell
-# RECOMMENDED: PSResourceGet (2x faster)
-Install-PSResource -Name Az -Scope CurrentUser -TrustRepository
-Install-PSResource -Name Microsoft.Graph -Version 2.32.0
-
-# Legacy: PowerShellGet (slower, but still works)
-Install-Module -Name Az -Scope CurrentUser -Force
-Install-Module -Name Pester -Scope AllUsers  # Requires elevation
-```
-
-### Managing Installed Modules
-
-```powershell
-# List installed (PSResourceGet)
-Get-InstalledPSResource
-Get-InstalledPSResource -Name Az
-
-# Update modules (PSResourceGet)
 Update-PSResource -Name Az
-Update-PSResource                              # Updates all
+Get-InstalledPSResource
 
-# Uninstall (PSResourceGet)
-Uninstall-PSResource -Name OldModule -AllVersions
-
-# Import module
-Import-Module -Name Az.Accounts
-```
-
-### Offline Installation
-
-```powershell
-# Save module (works with both)
-Save-PSResource -Name Az -Path C:\OfflineModules
-# Or: Save-Module -Name Az -Path C:\OfflineModules
-
-# Install from saved location
-Install-PSResource -Name Az -Path C:\OfflineModules
+# Legacy (still works, calls PSResourceGet internally)
+Install-Module -Name Az -Scope CurrentUser -Force
 ```
 
 ---
@@ -713,92 +622,9 @@ $ErrorActionPreference = "SilentlyContinue"  # Suppress errors
 
 ---
 
-## 🔒 Security Best Practices (2025 Standards)
+## 🔒 Security Best Practices
 
-### Modern Security Framework (JEA + WDAC + Logging)
-
-**2025 Security Requirements:**
-1. **JEA** - Just Enough Administration for role-based access
-2. **WDAC** - Windows Defender Application Control for script approval
-3. **Constrained Language Mode** - For non-admin users
-4. **Script Block Logging** - For audit trails
-
-### Just Enough Administration (JEA)
-
-**Required for production environments in 2025:**
-
-```powershell
-# Create JEA session configuration file
-New-PSSessionConfigurationFile -SessionType RestrictedRemoteServer `
-    -Path "C:\JEA\HelpDesk.pssc" `
-    -VisibleCmdlets @{
-        Name = 'Restart-Service'
-        Parameters = @{ Name = 'Name'; ValidateSet = 'Spooler', 'Wuauserv' }
-    }, @{
-        Name = 'Get-Service'
-    } `
-    -LanguageMode NoLanguage `
-    -ExecutionPolicy RemoteSigned
-
-# Register JEA endpoint
-Register-PSSessionConfiguration -Name HelpDesk `
-    -Path "C:\JEA\HelpDesk.pssc" `
-    -Force
-
-# Connect with limited privileges
-Enter-PSSession -ComputerName Server01 -ConfigurationName HelpDesk
-```
-
-### Windows Defender Application Control (WDAC)
-
-**Replaces AppLocker for PowerShell script control:**
-
-```powershell
-# Create WDAC policy for approved scripts
-New-CIPolicy -FilePath "C:\WDAC\PowerShellPolicy.xml" `
-    -ScanPath "C:\ApprovedScripts" `
-    -Level FilePublisher `
-    -Fallback Hash
-
-# Convert to binary
-ConvertFrom-CIPolicy -XmlFilePath "C:\WDAC\PowerShellPolicy.xml" `
-    -BinaryFilePath "C:\Windows\System32\CodeIntegrity\SIPolicy.p7b"
-
-# Deploy via Group Policy or MDM
-```
-
-### Constrained Language Mode
-
-**Recommended for all non-admin users:**
-
-```powershell
-# Check current language mode
-$ExecutionContext.SessionState.LanguageMode
-# Output: FullLanguage (admin) or ConstrainedLanguage (standard user)
-
-# Enable system-wide via environment variable
-[Environment]::SetEnvironmentVariable(
-    "__PSLockdownPolicy",
-    "4",
-    [System.EnvironmentVariableTarget]::Machine
-)
-```
-
-### Script Block Logging
-
-**Enable for security auditing:**
-
-```powershell
-# Enable via Group Policy or Registry
-# HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging
-# EnableScriptBlockLogging = 1
-# EnableScriptBlockInvocationLogging = 1
-
-# Check logs
-Get-WinEvent -LogName "Microsoft-Windows-PowerShell/Operational" |
-    Where-Object Id -eq 4104 |  # Script Block Logging
-    Select-Object TimeCreated, Message -First 10
-```
+> **See `powershell-security` skill for authoritative coverage of:** JEA configuration, WDAC policies, Constrained Language Mode, Script Block Logging, SecretManagement, code signing, and credential protection.
 
 ### Execution Policy
 
@@ -979,55 +805,7 @@ Set-StrictMode -Version Latest
 
 ## 🎓 Common Cmdlets Reference
 
-### File System
-```powershell
-Get-ChildItem (gci, ls, dir)
-Set-Location (cd, sl)
-New-Item (ni)
-Remove-Item (rm, del)
-Copy-Item (cp, copy)
-Move-Item (mv, move)
-Rename-Item (rn, ren)
-Get-Content (gc, cat, type)
-Set-Content (sc)
-Add-Content (ac)
-```
-
-### Process Management
-```powershell
-Get-Process (ps, gps)
-Stop-Process (kill, spps)
-Start-Process (start, saps)
-Wait-Process
-```
-
-### Service Management
-```powershell
-Get-Service (gsv)
-Start-Service (sasv)
-Stop-Service (spsv)
-Restart-Service (srsv)
-Set-Service
-```
-
-### Network
-```powershell
-Test-Connection (ping)
-Test-NetConnection
-Invoke-WebRequest (curl, wget, iwr)
-Invoke-RestMethod (irm)
-```
-
-### Object Manipulation
-```powershell
-Select-Object (select)
-Where-Object (where, ?)
-ForEach-Object (foreach, %)
-Sort-Object (sort)
-Group-Object (group)
-Measure-Object (measure)
-Compare-Object (compare, diff)
-```
+> **See** [`references/cmdlet_ref.md`](references/cmdlet_ref.md) **for:** Full cmdlet reference tables (FileSystem, Process, Service, Network, Object Manipulation).
 
 ---
 

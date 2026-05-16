@@ -318,7 +318,9 @@ Add-Type -TypeDefinition "..."  # ❌ Blocked
 # Enable via Group Policy or Registry
 # HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging
 New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" `
-    -Name "EnableScriptBlockLogging" -Value 1 -PropertyType DWord
+     -Name "EnableScriptBlockLogging" -Value 1 -PropertyType DWord
+New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" `
+     -Name "EnableScriptBlockInvocationLogging" -Value 1 -PropertyType DWord
 
 # Log location: Windows Event Log
 # Event Viewer > Applications and Services Logs > Microsoft > Windows > PowerShell > Operational

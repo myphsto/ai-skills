@@ -19,7 +19,7 @@ description: "Windows 11 system administration and hardening. PROACTIVELY activa
 Checkpoint-Computer -Description "Before Win11 Admin changes" -RestorePointType MODIFY_SETTINGS
 
 # Backup specific registry key before modification
-reg export "HKLM\SOFTWARE\Key" "C:\Users\cesco\backups\reg_backup_$(Get-Date -Format yyyyMMdd_HHmmss).reg"
+reg export "HKLM\SOFTWARE\Key" "$env:USERPROFILE\backups\reg_backup_$(Get-Date -Format yyyyMMdd_HHmmss).reg"
 ```
 
 ---
@@ -124,6 +124,45 @@ Remove-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905b
 # --- STARTUP ---
 # Disable startup delay
 New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize" -Name "StartupDelayInMSec" -Value 0 -PropertyType DWord -Force
+```
+
+### Rollback Commands
+
+```powershell
+# --- TASKBAR ROLLBACK ---
+# Restore Search button
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -ErrorAction SilentlyContinue
+
+# Restore Task View button
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -ErrorAction SilentlyContinue
+
+# Restore Widgets
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -ErrorAction SilentlyContinue
+
+# Restore Chat/Teams icon
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -ErrorAction SilentlyContinue
+
+# Restore centered taskbar
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarAl" -ErrorAction SilentlyContinue
+
+# --- EXPLORER ROLLBACK ---
+# Hide file extensions again
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -ErrorAction SilentlyContinue
+
+# Hide hidden files again
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -ErrorAction SilentlyContinue
+
+# Restore Snap Assist flyout
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "SnapAssist" -ErrorAction SilentlyContinue
+
+# Restore Win11 context menu
+Remove-Item -Path "HKCU:\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}" -Recurse -Force -ErrorAction SilentlyContinue
+
+# --- STARTUP ROLLBACK ---
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize" -Name "StartupDelayInMSec" -ErrorAction SilentlyContinue
+
+# Full rollback: restart Explorer to apply
+Stop-Process -Name explorer -Force
 ```
 
 ---
@@ -237,23 +276,55 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -Value 1
 
 # --- DEFENDER ---
+> **See `powershell-security` skill for** JEA/WDAC integration with Defender policies.
+
 # Enable Controlled Folder Access
 Set-MpPreference -EnableControlledFolderAccess Enabled
-
-# Add exclusion (path)
-Add-MpPreference -ExclusionPath "C:\Dev"
 
 # Enable Network Protection
 Set-MpPreference -EnableNetworkProtection Enabled
 
-# Enable PUA Protection
-Set-MpPreference -PUAProtection Enabled
+# Run full scan
+Start-MpScan -ScanType FullScan
+
+# Update definitions
+Update-MpSignature
 
 # --- LOCK SCREEN ---
 # Disable lock screen ads/tips
 New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Force
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "RotatingLockScreenOverlayEnabled" -Value 0
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338387Enabled" -Value 0
+```
+
+### Rollback GPO Changes
+
+```powershell
+# --- TELEMETRY ROLLBACK ---
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -ErrorAction SilentlyContinue
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Enabled" -ErrorAction SilentlyContinue
+
+# --- ACTIVITY HISTORY ROLLBACK ---
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -ErrorAction SilentlyContinue
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -ErrorAction SilentlyContinue
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -ErrorAction SilentlyContinue
+
+# --- WINDOWS UPDATE ROLLBACK ---
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "AUOptions" -ErrorAction SilentlyContinue
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoRebootWithLoggedOnUsers" -ErrorAction SilentlyContinue
+
+# --- DEFENDER ROLLBACK ---
+Set-MpPreference -EnableControlledFolderAccess Disabled
+Set-MpPreference -EnableNetworkProtection AuthenticatedUsers
+Set-MpPreference -PUAProtection Disabled
+
+# --- LOCK SCREEN ROLLBACK ---
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "RotatingLockScreenOverlayEnabled" -ErrorAction SilentlyContinue
+Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" -Name "SubscribedContent-338387Enabled" -ErrorAction SilentlyContinue
+
+# --- COPILOT/RECALL ROLLBACK ---
+Remove-Item -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsAI" -Recurse -Force -ErrorAction SilentlyContinue
 ```
 
 ### Edit Local GPO with gpedit.msc
@@ -530,59 +601,40 @@ Get-BitLockerVolume | Select-Object MountPoint, VolumeStatus, EncryptionMethod, 
 # Enable-BitLocker -MountPoint "C:" -EncryptionMethod XtsAes256 -UsedSpaceOnly -RecoveryPasswordProtector
 ```
 
-### Windows Defender Hardening
+### CIS Rollback Commands
 
 ```powershell
-# Enable all protection features
-Set-MpPreference -DisableRealtimeMonitoring $false
-Set-MpPreference -DisableBehaviorMonitoring $false
-Set-MpPreference -DisableBlockAtFirstSeen $false
-Set-MpPreference -DisableIOAVProtection $false
-Set-MpPreference -DisablePrivacyMode $false
-Set-MpPreference -DisableScriptScanning $false
+# --- ACCOUNT POLICIES ROLLBACK ---
+net accounts /minpwlen:7
+net accounts /uniquepw:24
+net accounts /lockoutthreshold:0
 
-# Enable cloud protection (high)
-Set-MpPreference -MAPSReporting Advanced
-Set-MpPreference -SubmitSamplesConsent SendAllSamples
+# --- AUDIT POLICY ROLLBACK ---
+auditpol /set /category:"Logon/Logoff" /success:disable /failure:disable
+auditpol /set /category:"Account Logon" /success:disable /failure:disable
+auditpol /set /category:"Account Management" /success:disable /failure:disable
+auditpol /set /category:"Policy Change" /success:disable /failure:disable
+auditpol /set /category:"Privilege Use" /success:disable /failure:disable
 
-# Enable Attack Surface Reduction rules
-$asrRules = @(
-    "BE9BA2D9-53EA-4CDC-84E5-9B1EEEE46550"  # Block executable content from email/webmail
-    "D4F940AB-401B-4EFC-AADC-AD5F3C50688A"  # Block Office apps from creating child processes
-    "3B576869-A4EC-4529-8536-B80A7769E899"  # Block Office apps from creating executable content
-    "75668C1F-73B5-4CF0-BB93-3ECF5CB7CC84"  # Block Office apps from injecting into other processes
-    "D3E037E1-3EB8-44C8-A917-57927947596D"  # Block JavaScript/VBScript launching downloaded content
-    "5BEB7EFE-FD9A-4556-801D-275E5FFC04CC"  # Block execution of potentially obfuscated scripts
-    "92E97FA1-2EDF-4476-BDD6-9DD0B4DDDC7B"  # Block Win32 API calls from Office macros
-    "01443614-CD74-433A-B99E-2ECDC07BFC25"  # Block executable files unless they meet criteria
-    "C1DB55AB-C21A-4637-BB3F-A12568109D35"  # Use advanced protection against ransomware
-    "9E6C4E1F-7D60-472F-BA1A-A39EF669E4B2"  # Block credential stealing from LSASS
-    "D1E49AAC-8F56-4280-B9BA-993A6D77406C"  # Block process creations from PSExec and WMI
-    "B2B3F03D-6A65-4F7B-A9C7-1C7EF74A9BA4"  # Block untrusted/unsigned processes from USB
-    "26190899-1602-49E8-8B27-EB1D0A1CE869"  # Block Office communication apps from creating child processes
-    "7674BA52-37EB-4A4F-A9A1-F0F9A1619A2C"  # Block Adobe Reader from creating child processes
-    "E6DB77E5-3DF2-4CF1-B95A-636979351E5B"  # Block persistence through WMI event subscription
-    "56A863A9-875E-4185-98A7-B882C64B5CE5"  # Block abuse of exploited vulnerable signed drivers
-)
+# --- NETWORK ROLLBACK ---
+$adapters = Get-WmiObject Win32_NetworkAdapterConfiguration -Filter "IPEnabled=True"
+foreach ($adapter in $adapters) { $adapter.SetTcpipNetbios(0) }
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient" -Name "EnableMulticast" -ErrorAction SilentlyContinue
 
-# Enable in Block mode (1=Block, 2=Audit, 6=Warn)
-$asrRules | ForEach-Object {
-    Add-MpPreference -AttackSurfaceReductionRules_Ids $_ -AttackSurfaceReductionRules_Actions 1
-}
+# --- SMB ROLLBACK ---
+Enable-WindowsOptionalFeature -Online -FeatureName SMB1Protocol -NoRestart
+Set-SmbServerConfiguration -EnableSMB1Protocol $true -Force
+Set-SmbServerConfiguration -RequireSecuritySignature $false -Force
+Set-SmbClientConfiguration -RequireSecuritySignature $false -Force
 
-# Enable Network Protection
-Set-MpPreference -EnableNetworkProtection Enabled
+# --- UAC ROLLBACK ---
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -ErrorAction SilentlyContinue
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "ConsentPromptBehaviorAdmin" -ErrorAction SilentlyContinue
+Remove-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "PromptOnSecureDesktop" -ErrorAction SilentlyContinue
 
-# Enable Controlled Folder Access (ransomware protection)
-Set-MpPreference -EnableControlledFolderAccess Enabled
-Add-MpPreference -ControlledFolderAccessAllowedApplications "C:\Program Files\MyApp\app.exe"
-Add-MpPreference -ControlledFolderAccessProtectedFolders "D:\ImportantData"
-
-# Run full scan
-Start-MpScan -ScanType FullScan
-
-# Update definitions
-Update-MpSignature
+# --- REMOTE ROLLBACK ---
+Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Terminal Server" -Name "fDenyTSConnections" -ErrorAction SilentlyContinue
+Remove-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Remote Assistance" -Name "fAllowToGetHelp" -ErrorAction SilentlyContinue
 ```
 
 ---
@@ -620,8 +672,8 @@ Remove-NetFirewallRule -DisplayName "Allow MyApp"
 Disable-NetFirewallRule -DisplayName "Allow MyApp"
 
 # Export/Import rules (backup)
-netsh advfirewall export "C:\Users\cesco\backups\firewall_$(Get-Date -Format yyyyMMdd).wfw"
-# netsh advfirewall import "C:\Users\cesco\backups\firewall_backup.wfw"
+netsh advfirewall export "$env:USERPROFILE\backups\firewall_$(Get-Date -Format yyyyMMdd).wfw"
+# netsh advfirewall import "$env:USERPROFILE\backups\firewall_backup.wfw"
 ```
 
 ---
@@ -806,25 +858,6 @@ Get-ItemProperty "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*" |
 
 ---
 
-## Quick Reference: Common Admin Tasks
+## Quick Reference
 
-| Task | Command |
-|------|---------|
-| System restore point | `Checkpoint-Computer -Description "desc"` |
-| Restart Explorer | `Stop-Process -Name explorer -Force` |
-| Flush DNS | `Clear-DnsClientCache` |
-| Check disk | `chkdsk C: /f /r` (requires reboot) |
-| Repair system files | `sfc /scannow` |
-| Repair Windows image | `DISM /Online /Cleanup-Image /RestoreHealth` |
-| Reset network stack | `netsh winsock reset && netsh int ip reset` |
-| Clear Windows Store cache | `wsreset.exe` |
-| Open device manager | `devmgmt.msc` |
-| Open disk management | `diskmgmt.msc` |
-| Open services | `services.msc` |
-| Open firewall | `wf.msc` |
-| Open event viewer | `eventvwr.msc` |
-| Open task scheduler | `taskschd.msc` |
-| Open registry editor | `regedit` |
-| System properties | `sysdm.cpl` |
-| Network connections | `ncpa.cpl` |
-| Programs and features | `appwiz.cpl` |
+> **See** [`references/quick_ref.md`](references/quick_ref.md) **for:** Common admin tasks table, registry hive abbreviations, service startup types, never-disable/never-remove lists.

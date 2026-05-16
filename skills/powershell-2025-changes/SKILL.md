@@ -122,27 +122,9 @@ Get-ComputerInfo | Select-Object WindowsProductName, WindowsVersion
 
 ## PowerShellGet → PSResourceGet Migration
 
-### Modern Package Management (2025)
+> **See `powershell-7.5-features` skill for full PSResourceGet coverage** (commands, performance, security, Azure Artifacts).
 
-**PSResourceGet** is the official successor to PowerShellGet (2x faster, actively developed).
-
-```powershell
-# Install PSResourceGet (ships with PowerShell 7.4+)
-Install-Module -Name Microsoft.PowerShell.PSResourceGet -Force
-
-# New commands (PSResourceGet)
-Install-PSResource -Name Az -Scope CurrentUser  # Replaces Install-Module
-Find-PSResource -Name "*Azure*"                 # Replaces Find-Module
-Update-PSResource -Name Az                      # Replaces Update-Module
-Get-InstalledPSResource                         # Replaces Get-InstalledModule
-
-# Compatibility layer available for legacy scripts
-# Your old Install-Module commands still work but call PSResourceGet internally
-```
-
-**Performance Comparison:**
-- **PowerShellGet**: 10-15 seconds to install module
-- **PSResourceGet**: 5-7 seconds to install module (2x faster)
+**Key change:** PSResourceGet is the official successor to PowerShellGet (2x faster). Legacy `Install-Module` commands work via compatibility layer.
 
 ---
 
@@ -199,57 +181,9 @@ Connect-ExchangeOnline
 
 ## Security Hardening (2025 Standards)
 
-### Just Enough Administration (JEA)
+> **See `powershell-security` skill for full coverage of:** JEA configuration, WDAC policies, Constrained Language Mode, Script Block Logging, and code signing.
 
-**JEA** is now a security requirement for production environments:
-
-```powershell
-# Create JEA session configuration
-New-PSSessionConfigurationFile -SessionType RestrictedRemoteServer `
-    -Path "C:\JEA\RestrictedAdmin.pssc" `
-    -VisibleCmdlets @{
-        Name = 'Restart-Service'
-        Parameters = @{ Name = 'Name'; ValidateSet = 'Spooler' }
-    } `
-    -LanguageMode NoLanguage
-
-# Register JEA endpoint
-Register-PSSessionConfiguration -Name RestrictedAdmin `
-    -Path "C:\JEA\RestrictedAdmin.pssc" `
-    -Force
-
-# Connect with limited privileges
-Enter-PSSession -ComputerName Server01 -ConfigurationName RestrictedAdmin
-```
-
-### Windows Defender Application Control (WDAC)
-
-**WDAC** replaces AppLocker for PowerShell script control:
-
-```powershell
-# Create WDAC policy for PowerShell scripts
-New-CIPolicy -FilePath "C:\WDAC\PowerShellPolicy.xml" `
-    -ScanPath "C:\Scripts" `
-    -Level FilePublisher `
-    -Fallback Hash
-
-# Convert to binary and deploy
-ConvertFrom-CIPolicy -XmlFilePath "C:\WDAC\PowerShellPolicy.xml" `
-    -BinaryFilePath "C:\Windows\System32\CodeIntegrity\SIPolicy.p7b"
-```
-
-### Constrained Language Mode
-
-**Constrained Language Mode** is now recommended for all users without admin privileges:
-
-```powershell
-# Check current language mode
-$ExecutionContext.SessionState.LanguageMode
-# Output: FullLanguage (admin) or ConstrainedLanguage (standard user)
-
-# Set system-wide constrained language mode via Group Policy or Environment Variable
-# Set HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment\__PSLockdownPolicy = 4
-```
+**2025 requirement:** Implement JEA for production environments and evaluate WDAC for script control.
 
 ---
 
@@ -285,19 +219,19 @@ $PSVersionTable.PSVersion
 - [ ] **Replace WMIC commands** - Use Get-CimInstance/Get-Process
 - [ ] **Update JSON schemas** - Migrate Draft 4 to Draft 6+
 - [ ] **Remove PSSnapin requirements** - Convert to modules
-- [ ] **Adopt PSResourceGet** - Faster, modern package management
-- [ ] **Implement JEA** - Role-based access control for production
-- [ ] **Enable WDAC** - Application control for PowerShell scripts
-- [ ] **Test Constrained Language Mode** - For non-admin users
+- [ ] **Adopt PSResourceGet** - See `powershell-7.5-features` for details
+- [ ] **Implement JEA** - See `powershell-security` for configuration
+- [ ] **Enable WDAC** - See `powershell-security` for policy templates
+- [ ] **Test Constrained Language Mode** - See `powershell-security` for setup
 
 ### Recommended Actions
 
-- [ ] **Upgrade to PowerShell 7.5.4** - Latest stable with .NET 9
+- [ ] **Upgrade to PowerShell 7.5.4** - Latest stable with .NET 9 (see `powershell-7.5-features`)
 - [ ] **Adopt Az 14.5.0** - Latest Azure module with zone redundancy
 - [ ] **Use Microsoft.Graph 2.32.0** - Actively maintained Graph SDK
-- [ ] **Enable Script Block Logging** - Security auditing
-- [ ] **Implement Code Signing** - For production scripts
-- [ ] **Use Azure Key Vault** - For credential management
+- [ ] **Enable Script Block Logging** - See `powershell-security`
+- [ ] **Implement Code Signing** - See `powershell-security`
+- [ ] **Use Azure Key Vault** - See `powershell-security` for SecretManagement setup
 
 ---
 
@@ -328,9 +262,8 @@ Test-Path $PSCommandPath  # Ensures script is PowerShell 7+
 
 - [PowerShell 7.5 Release Notes](https://learn.microsoft.com/en-us/powershell/scripting/whats-new/what-s-new-in-powershell-75)
 - [MSOnline/AzureAD Retirement Info](https://techcommunity.microsoft.com/blog/microsoft-entra-blog/action-required-msonline-and-azuread-powershell-retirement---2025-info-and-resou/4364991)
-- [PSResourceGet Documentation](https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.psresourceget)
-- [JEA Documentation](https://learn.microsoft.com/en-us/powershell/scripting/security/remoting/jea/overview)
-- [WDAC Documentation](https://learn.microsoft.com/en-us/windows/security/application-security/application-control/windows-defender-application-control)
+- **PSResourceGet details:** `powershell-7.5-features` skill
+- **JEA/WDAC/Security:** `powershell-security` skill
 
 ---
 
