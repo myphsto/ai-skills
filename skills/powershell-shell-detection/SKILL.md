@@ -198,105 +198,16 @@ export MSYS2_ARG_CONV_EXCL="*"           # Exclude everything
 export MSYS2_ARG_CONV_EXCL="--dir=;/test"  # Specific prefixes
 ```
 
-## When to Use PowerShell vs Git Bash on Windows
+## When to Use Which Shell
 
-### Use PowerShell When:
+| Choose PowerShell when | Choose Git Bash when |
+|---|---|
+| Windows-specific tasks (Registry, WMI, services) | Unix tool compatibility (sed, awk, grep) |
+| Azure/M365 automation (Az, Microsoft.Graph) | Git operations / POSIX scripts |
+| Module ecosystem (PSGallery) | Text processing pipelines |
+| Object-oriented pipelines | Cross-platform bash scripts |
 
-- ✅ **Windows-specific tasks** - Registry, WMI, Windows services
-- ✅ **Azure/Microsoft 365 automation** - Az, Microsoft.Graph modules
-- ✅ **Module ecosystem** - Leverage PSGallery modules
-- ✅ **Object-oriented pipelines** - Rich object manipulation
-- ✅ **Native Windows integration** - Built into Windows
-- ✅ **CI/CD with pwsh** - GitHub Actions, Azure DevOps
-- ✅ **Cross-platform scripting** - PowerShell 7 works on Linux/macOS
-
-**Example PowerShell Scenario:**
-```powershell
-# Azure VM management with Az module
-Connect-AzAccount
-Get-AzVM -ResourceGroupName "Production" |
-    Where-Object {$_.PowerState -eq "VM running"} |
-    Stop-AzVM -Force
-```
-
-### Use Git Bash When:
-
-- ✅ **Unix tool compatibility** - sed, awk, grep, find
-- ✅ **Git operations** - Native Git command-line experience
-- ✅ **POSIX script execution** - Running Linux shell scripts
-- ✅ **Cross-platform shell scripts** - Bash scripts from Linux/macOS
-- ✅ **Text processing** - Unix text utilities (sed, awk, cut)
-- ✅ **Development workflows** - Node.js, Python, Ruby with Unix tools
-
-**Example Git Bash Scenario:**
-```bash
-# Git workflow with Unix tools
-git log --oneline | grep -i "feature" | awk '{print $1}' |
-    xargs git show --stat
-```
-
-## Shell-Aware Script Design
-
-### Detect and Adapt (PowerShell)
-
-```powershell
-# Detect if running in PowerShell or Git Bash context
-function Test-PowerShellContext {
-    return ($null -ne $PSVersionTable)
-}
-
-# Adapt path handling based on context
-function Get-CrossPlatformPath {
-    param([string]$Path)
-
-    if (Test-PowerShellContext) {
-        # PowerShell: Use Join-Path
-        return (Resolve-Path $Path -ErrorAction SilentlyContinue).Path
-    }
-    else {
-        # Non-PowerShell context
-        Write-Warning "Not running in PowerShell. Path operations may differ."
-        return $Path
-    }
-}
-```
-
-### Detect and Adapt (Bash)
-
-```bash
-# Detect shell environment
-detect_shell() {
-    if [ -n "$MSYSTEM" ]; then
-        echo "git-bash"
-    elif [ -n "$PSModulePath" ]; then
-        echo "powershell"
-    elif [ -n "$WSL_DISTRO_NAME" ]; then
-        echo "wsl"
-    else
-        echo "unix"
-    fi
-}
-
-# Adapt path handling
-convert_path() {
-    local path="$1"
-    local shell_type=$(detect_shell)
-
-    case "$shell_type" in
-        git-bash)
-            # Convert Windows path to Unix style
-            echo "$path" | sed 's|\\|/|g' | sed 's|^\([A-Z]\):|/\L\1|'
-            ;;
-        *)
-            echo "$path"
-            ;;
-    esac
-}
-
-# Usage
-shell_type=$(detect_shell)
-echo "Running in: $shell_type"
-```
+> **See [`references/shell-aware-examples.md`](references/shell-aware-examples.md)** for shell-aware script design patterns, practical cross-shell examples, and troubleshooting.
 
 ## Environment Variable Comparison
 
@@ -327,111 +238,9 @@ echo $MSYSTEM          # Git Bash: MINGW64, MINGW32, or MSYS
 echo $PSModulePath     # Would be empty in pure Bash
 ```
 
-## Practical Examples
+## Troubleshooting
 
-### Example 1: Cross-Shell File Finding
-
-**PowerShell:**
-```powershell
-# Find files modified in last 7 days
-Get-ChildItem -Path "C:\Projects" -Recurse -File |
-    Where-Object { $_.LastWriteTime -gt (Get-Date).AddDays(-7) } |
-    Select-Object FullName, LastWriteTime
-```
-
-**Git Bash:**
-```bash
-# Same operation in Git Bash
-find /c/Projects -type f -mtime -7 -exec ls -lh {} \;
-```
-
-### Example 2: Process Management
-
-**PowerShell:**
-```powershell
-# Stop all Chrome processes
-Get-Process chrome -ErrorAction SilentlyContinue | Stop-Process -Force
-```
-
-**Git Bash:**
-```bash
-# Same operation in Git Bash
-ps aux | grep chrome | awk '{print $2}' | xargs kill -9 2>/dev/null
-```
-
-### Example 3: Text File Processing
-
-**PowerShell:**
-```powershell
-# Extract unique email addresses from logs
-Get-Content "logs.txt" |
-    Select-String -Pattern '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b' |
-    ForEach-Object { $_.Matches.Value } |
-    Sort-Object -Unique
-```
-
-**Git Bash:**
-```bash
-# Same operation in Git Bash
-grep -oE '\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b' logs.txt |
-    sort -u
-```
-
-## Troubleshooting Cross-Shell Issues
-
-### Issue 1: Command Not Found
-
-**Problem:** Command works in one shell but not another
-```powershell
-# PowerShell
-Get-Process  # Works
-```
-```bash
-# Git Bash
-Get-Process  # Command not found
-```
-
-**Solution:** Understand that PowerShell cmdlets don't exist in Bash. Use native commands or install PowerShell Core (pwsh) in Git Bash:
-```bash
-# Run PowerShell from Git Bash
-pwsh -Command "Get-Process"
-```
-
-### Issue 2: Path Format Mismatches
-
-**Problem:** Paths don't work across shells
-```bash
-# Git Bash path
-/c/Users/John/file.txt  # Works in Bash
-
-# PowerShell
-Test-Path "/c/Users/John/file.txt"  # May fail
-```
-
-**Solution:** Use cygpath for conversion or normalize paths:
-```bash
-# Convert to Windows format for PowerShell
-win_path=$(cygpath -w "/c/Users/John/file.txt")
-pwsh -Command "Test-Path '$win_path'"
-```
-
-### Issue 3: Alias Conflicts
-
-**Problem:** `ls`, `cd`, `cat` behave differently
-```powershell
-# PowerShell
-ls  # Actually runs Get-ChildItem
-```
-```bash
-# Git Bash
-ls  # Runs native Unix ls command
-```
-
-**Solution:** Use full cmdlet names in PowerShell scripts:
-```powershell
-# Instead of: ls
-Get-ChildItem  # Explicit cmdlet name
-```
+> **See [`references/shell-aware-examples.md`](references/shell-aware-examples.md)** for practical cross-shell examples and troubleshooting common issues (command not found, path mismatches, alias conflicts).
 
 ## Best Practices Summary
 

@@ -1,6 +1,6 @@
 ---
 name: skill-creator
-description: Guide for creating effective skills. Use when you want to create a new skill (or update an existing skill) that extends your agent's capabilities with specialized knowledge, workflows, or tool integrations.
+description: "Guide for creating, updating, evaluating, and scoring effective skills. Use when you want to create a new skill, update an existing skill, or fully evaluate and score a skill. Extends your agent's capabilities with specialized knowledge, workflows, or tool integrations."
 ---
 
 # Skill Creator
@@ -20,6 +20,15 @@ equipped with procedural knowledge that no model can fully possess.
 2. Tool integrations - Instructions for working with specific file formats or APIs
 3. Domain expertise - Company-specific knowledge, schemas, business logic
 4. Bundled resources - Scripts, references, and assets for complex and repetitive tasks
+
+### Skill Types
+
+Classify the skill before writing — it shapes testing and instruction design:
+
+- **Discipline** — enforces rules agents might rationalize away (TDD, verification). Needs pressure testing.
+- **Technique** — teaches a concrete method with steps (data extraction, deployment). Needs eval-driven testing.
+- **Pattern** — provides a mental model for problem-solving (error handling strategies). Needs recognition + application testing.
+- **Reference** — API docs, syntax guides, tool documentation. Needs retrieval + gap testing.
 
 ## Core Principles
 
@@ -54,6 +63,8 @@ skill-name/
 │   │   ├── name: (required)
 │   │   └── description: (required)
 │   └── Markdown instructions (required)
+├── evals/
+│   └── evals.json (required)
 └── Bundled Resources (optional)
     ├── scripts/          - Executable code (Python/Bash/etc.)
     ├── references/       - Documentation intended to be loaded into context as needed
@@ -64,8 +75,28 @@ skill-name/
 
 Every SKILL.md consists of:
 
-- **Frontmatter** (YAML): Contains `name` and `description` fields. These are the only fields that the agent reads to determine when the skill gets used, thus it is very important to be clear and comprehensive in describing what the skill is, and when it should be used.
+- **Frontmatter** (YAML): Contains `name` and `description` fields. These are the only fields that the agent reads to determine when the skill gets used, thus it is very important to be clear and comprehensive in describing what the skill is, and when to use it.
 - **Body** (Markdown): Instructions and guidance for using the skill. Only loaded AFTER the skill triggers (if at all).
+
+#### Evals (required)
+
+Every skill includes `evals/evals.json` with at least 2 test cases:
+
+```json
+{
+  "skill_name": "my-skill",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Realistic user prompt with specific details",
+      "expected_output": "What success looks like",
+      "files": []
+    }
+  ]
+}
+```
+
+Test cases are written during the eval phase and used to verify the skill works before shipping.
 
 #### Bundled Resources (optional)
 
@@ -157,7 +188,7 @@ bigquery-skill/
     └── marketing.md (campaigns, attribution)
 ```
 
-When a user asks about sales metrics, the agent only reads sales.md.
+When the user asks about sales metrics, the agent only reads sales.md.
 
 Similarly, for skills supporting multiple frameworks or variants, organize by variant:
 
@@ -198,18 +229,13 @@ The agent reads REDLINING.md or OOXML.md only when the user needs those features
 - **Avoid deeply nested references** - Keep references one level deep from SKILL.md. All reference files should link directly from SKILL.md.
 - **Structure longer reference files** - For files longer than 100 lines, include a table of contents at the top so the agent can see the full scope when previewing.
 
-## Skill Creation Process
+## Skill Creation Loop
 
-Skill creation involves these steps:
+Skill creation follows a loop, not a linear process. The eval phase is mandatory — every skill is evaluated and scored before shipping.
 
-1. Understand the skill with concrete examples
-2. Plan reusable skill contents (scripts, references, assets)
-3. Initialize the skill (run init_skill.py)
-4. Edit the skill (implement resources and write SKILL.md)
-5. Validate the skill (run quick_validate.py)
-6. Iterate based on real usage
-
-Follow these steps in order, skipping only if there is a clear reason why they are not applicable.
+```
+Capture → Draft → Validate → Eval → Improve → (loop) → Ship
+```
 
 ### Skill Naming
 
@@ -219,9 +245,28 @@ Follow these steps in order, skipping only if there is a clear reason why they a
 - Namespace by tool when it improves clarity or triggering (e.g., `gh-address-comments`, `linear-address-issue`).
 - Name the skill folder exactly after the skill name.
 
-### Step 1: Understanding the Skill with Concrete Examples
+### Install Locations
 
-Skip this step only when the skill's usage patterns are already clearly understood. It remains valuable even when working with an existing skill.
+Skills install to `.agents/skills/<name>/` for cross-client portability. Platform-specific locations:
+
+| Platform | Path |
+|----------|------|
+| Cross-client (recommended) | `.agents/skills/<name>/` or `~/.agents/skills/<name>/` |
+| Claude Code | `~/.claude/skills/<name>/` |
+| Windsurf | `.windsurf/skills/<name>/` or `~/.codeium/windsurf/skills/<name>/` |
+| Codex | `.agents/skills/<name>/` (repo, user, or `/etc/codex/skills/`) |
+
+---
+
+### Phase 1: Capture
+
+Extract or ask for:
+
+1. **What** should this skill enable an agent to do?
+2. **When** should it trigger? (user phrases, contexts, symptoms)
+3. **What type** is it? (Discipline, Technique, Pattern, Reference — see Skill Types above)
+4. **Expected output** — what does success look like?
+5. **Where** will it be installed? (see Install Locations)
 
 To create an effective skill, clearly understand concrete examples of how the skill will be used. This understanding can come from either direct user examples or generated examples that are validated with user feedback.
 
@@ -234,11 +279,9 @@ For example, when building an image-editor skill, relevant questions include:
 
 To avoid overwhelming users, avoid asking too many questions in a single message. Start with the most important questions and follow up as needed for better effectiveness.
 
-Conclude this step when there is a clear sense of the functionality the skill should support.
+Conclude this phase when there is a clear sense of the functionality the skill should support.
 
-### Step 2: Planning the Reusable Skill Contents
-
-To turn concrete examples into an effective skill, analyze each example by:
+To turn concrete examples into a skill plan, analyze each example by:
 
 1. Considering how to execute on the example from scratch
 2. Identifying what scripts, references, and assets would be helpful when executing these workflows repeatedly
@@ -248,98 +291,208 @@ Example: When building a `pdf-editor` skill to handle queries like "Help me rota
 1. Rotating a PDF requires re-writing the same code each time
 2. A `scripts/rotate_pdf.py` script would be helpful to store in the skill
 
-Example: When designing a `frontend-webapp-builder` skill for queries like "Build me a todo app" or "Build me a dashboard to track my steps," the analysis shows:
+---
 
-1. Writing a frontend webapp requires the same boilerplate HTML/React each time
-2. An `assets/hello-world/` template containing the boilerplate HTML/React project files would be helpful to store in the skill
+### Phase 2: Draft
 
-Example: When building a `big-query` skill to handle queries like "How many users have logged in today?" the analysis shows:
+Initialize the skill directory and write the SKILL.md.
 
-1. Querying BigQuery requires re-discovering the table schemas and relationships each time
-2. A `references/schema.md` file documenting the table schemas would be helpful to store in the skill
-
-To establish the skill's contents, analyze each concrete example to create a list of the reusable resources to include: scripts, references, and assets.
-
-### Step 3: Initializing the Skill
-
-At this point, it is time to actually create the skill.
-
-Skip this step only if the skill being developed already exists. In this case, continue to the next step.
-
-When creating a new skill from scratch, always run the `init_skill.py` script. The script conveniently generates a new template skill directory that automatically includes everything a skill requires, making the skill creation process much more efficient and reliable.
-
-Usage:
+When creating a new skill from scratch, run `init_skill.py`:
 
 ```bash
 scripts/init_skill.py <skill-name> --path <output-directory> [--resources scripts,references,assets] [--examples]
 ```
 
-Examples:
+**Dependencies:** The scripts require `pyyaml`. Before running, check if it is available:
+- If `uv` is installed, use `uv run scripts/init_skill.py ...` — it handles dependencies automatically.
+- If `uv` is not available and `pyyaml` is missing, create a local venv: `python3 -m venv .venv && .venv/bin/pip install -r scripts/requirements.txt`, then run `.venv/bin/python scripts/init_skill.py ...`.
+- If declined or unavailable, continue with manual workflow — the scripts are simple enough to run without them.
 
-```bash
-scripts/init_skill.py my-skill --path ~/.agents/skills
-scripts/init_skill.py my-skill --path ~/.agents/skills --resources scripts,references
-scripts/init_skill.py my-skill --path ~/.agents/skills --resources scripts --examples
+The script creates the skill directory, SKILL.md template, `evals/evals.json`, and optional resource directories.
+
+#### Writing SKILL.md
+
+Read `references/writing-craft.md` for instruction design principles — how to write instructions agents actually follow.
+
+**Frontmatter:**
+
+- `name`: The skill name (must match directory name)
+- `description`: The primary triggering mechanism — describes what the skill does AND when to use it
+
+**YAML safety:** Use double quotes for string-valued frontmatter fields to avoid YAML plain-scalar failures on punctuation:
+
+```yaml
+# Fragile: breaks on ": "
+description: Use when the user says: "comment on OBT-1234"
+
+# Safe: quoted scalar
+description: "Use when the user says: \"comment on OBT-1234\""
 ```
 
-The script:
+**Description anti-patterns:**
 
-- Creates the skill directory at the specified path
-- Generates a SKILL.md template with proper frontmatter and TODO placeholders
-- Optionally creates resource directories based on `--resources`
-- Optionally adds example files when `--examples` is set
+```yaml
+# BAD: workflow leak — agent follows description instead of reading full skill
+description: "Use when executing plans - dispatches subagent per task with code review"
 
-After initialization, customize the SKILL.md and add resources as needed. If you used `--examples`, replace or delete placeholder files.
+# BAD: too vague
+description: "Helps with PDFs"
 
-### Step 4: Edit the Skill
+# BAD: first person
+description: "I can help you with async tests when they're flaky"
 
-When editing the (newly-generated or existing) skill, remember that the skill is being created for another agent instance to use. Include information that would be beneficial and non-obvious to the agent. Consider what procedural knowledge, domain-specific details, or reusable assets would help another agent instance execute these tasks more effectively.
+# GOOD: what it does + when to trigger, no workflow
+description: "Use when implementing any feature or bugfix, before writing implementation code"
 
-#### Start with Reusable Skill Contents
+# GOOD: specific symptoms
+description: "Use when tests have race conditions, timing dependencies, or pass/fail inconsistently"
+```
 
-To begin implementation, start with the reusable resources identified above: `scripts/`, `references/`, and `assets/` files. Note that this step may require user input. For example, when implementing a `brand-guidelines` skill, the user may need to provide brand assets or templates to store in `assets/`, or documentation to store in `references/`.
+**Description rules:**
+- Start with what the skill does, then include triggering conditions
+- Include specific keywords agents would search for (error messages, symptoms, tool names)
+- Write in third person (injected into system prompt)
+- Be slightly "pushy" — agents tend to undertrigger skills, so cast a wider net
+- Never summarize the skill's internal workflow in the description
 
-Added scripts must be tested by actually running them to ensure there are no bugs and that the output matches what is expected. If there are many similar scripts, only a representative sample needs to be tested to ensure confidence that they all work while balancing time to completion.
+**Body:** Write instructions for using the skill and its bundled resources. Always use imperative/infinitive form.
 
-If you used `--examples`, delete any placeholder files that are not needed for the skill. Only create resource directories that are actually required.
+**Script design guidelines** (if the skill includes `scripts/`):
+- Non-interactive — no TTY prompts, agents run in non-interactive shells
+- Good `--help` output — description, flags, examples
+- Structured output — JSON/CSV over free-form text
+- Helpful error messages — what went wrong, what was expected, what to try
+- Idempotent where possible — "create if not exists" over "create and fail on duplicate"
+- Data to stdout, diagnostics to stderr
+- Pin dependency versions for reproducibility
 
-#### Update SKILL.md
-
-**Writing Guidelines:** Always use imperative/infinitive form.
-
-##### Frontmatter
-
-Write the YAML frontmatter with `name` and `description`:
-
-- `name`: The skill name
-- `description`: This is the primary triggering mechanism for your skill, and helps the agent understand when to use the skill.
-  - Include both what the Skill does and specific triggers/contexts for when to use it.
-  - Include all "when to use" information here - Not in the body. The body is only loaded after triggering, so "When to Use This Skill" sections in the body are not helpful to the agent.
-  - Example description for a `docx` skill: "Comprehensive document creation, editing, and analysis with support for tracked changes, comments, formatting preservation, and text extraction. Use when the agent needs to work with professional documents (.docx files) for: (1) Creating new documents, (2) Modifying or editing content, (3) Working with tracked changes, (4) Adding comments, or any other document tasks"
-
-Do not include any other fields in YAML frontmatter.
-
-##### Body
-
-Write instructions for using the skill and its bundled resources.
-
-### Step 5: Validate the Skill
-
-Once development of the skill is complete, validate the skill folder to catch basic issues early:
+After drafting, run structural validation immediately:
 
 ```bash
 scripts/quick_validate.py <path/to/skill-folder>
 ```
 
-The validation script checks YAML frontmatter format, required fields, and naming rules. If validation fails, fix the reported issues and run the command again.
+**Dependencies:** The scripts require `pyyaml`. Use `uv run scripts/quick_validate.py ...` if `uv` is available. Otherwise, create a local venv: `python3 -m venv .venv && .venv/bin/pip install -r scripts/requirements.txt`, then run `.venv/bin/python scripts/quick_validate.py ...`.
 
-### Step 6: Iterate
+Do not proceed to eval until validation passes. Re-run after every frontmatter edit.
 
-After testing the skill, users may request improvements. Often this happens right after using the skill, with fresh context of how the skill performed.
+---
 
-**Iteration workflow:**
+### Phase 3: Validate
 
-1. Use the skill on real tasks
-2. Notice struggles or inefficiencies
-3. Identify how SKILL.md or bundled resources should be updated
-4. Implement changes and test again
+Run `quick_validate.py` to check YAML frontmatter format, required fields, naming rules, line count, and name-to-directory match. Fix any issues before proceeding.
+
+---
+
+### Phase 4: Eval
+
+Evaluate the skill inline. This phase is mandatory and produces a scored scorecard.
+
+Read `references/testing-guide.md` for writing good test prompts, assertions, and grading principles.
+
+#### 4a: Contract Compliance
+
+Verify the skill's stated output contract matches what it would actually produce. If the skill declares an output format (e.g., "return exactly 3 failure modes"), simulate a run and confirm compliance.
+
+#### 4b: Description Quality
+
+Check the description against these criteria:
+- No workflow leaks (agent shouldn't skip reading the full skill)
+- Triggers are comprehensive but not overly broad
+- Written in third person
+- Includes specific keywords and symptoms
+- Score: pass/fail per criterion
+
+#### 4c: Catalog Fit
+
+Read sibling skill descriptions in the install location. Check for:
+- Overlapping triggers that could cause confusion
+- Missing triggers that belong in another skill
+- Clear differentiation between related skills
+- Score: list any conflicts and severity
+
+#### 4d: Edge Cases
+
+Test the skill mentally against:
+- Trivial input (should the skill skip heavy process?)
+- Missing context (should the skill infer or ask?)
+- Competing skill triggers (which skill should win?)
+- Score: pass/fail per edge case
+
+#### 4e: Test Cases
+
+If the skill type is Discipline, run pressure testing — see `references/testing-guide.md`.
+
+For all other skill types, write eval cases that cover the skill thoroughly. Good evals test:
+- **Output contract** — does the skill produce its declared format and counts?
+- **Trigger coverage** — test each trigger phrase from the description (whatever they are)
+- **Scope rules** — if the skill has scope guidance (e.g., "critique feature, not repo"), test it
+- **Edge cases** — trivial input, missing context, competing triggers
+- **Decision quality** — if the skill makes judgment calls, test when heavy process triggers vs. skips
+
+**How to write good evals:**
+- Make prompts realistic — what a real user would actually say (specific, with file paths, context, casual language)
+- Vary phrasing, formality, and detail levels — don't write all prompts the same way
+- If the skill makes judgment calls, include at least one eval that tests decision quality rather than output formatting alone
+- Require concrete evidence for a PASS — don't give benefit of the doubt
+
+Write 3-5 realistic test prompts in `evals/evals.json`, then run them:
+1. Execute each test prompt as if the agent were following the skill
+2. Compare output against `expected_output`
+3. Note failures and their root cause
+
+#### 4f: Scorecard
+
+Produce an inline scorecard:
+
+```
+Eval score: X/10
+
+Dimensions:
+- Contract compliance: pass/fail — notes
+- Description quality: pass/fail — notes
+- Catalog fit: pass/fail — notes
+- Edge cases: pass/fail — notes
+- Test cases: X/Y passed — notes
+
+Patterns:
+- The skill reliably ...
+- The remaining weakness is ...
+
+Recommended improvements:
+- ...
+```
+
+---
+
+### Phase 5: Improve
+
+Address every failing dimension from the eval scorecard:
+
+1. **Generalize from feedback** — fix underlying issues, don't overfit to test cases
+2. **Keep the skill lean** — remove instructions that aren't pulling their weight
+3. **Explain the why** — reasoning-based instructions ("Do X because Y causes Z") outperform rigid directives
+4. **Bundle repeated work** — if every eval run needed the same helper, add it to `scripts/`
+
+After improvements, loop back to Phase 3 (Validate) and Phase 4 (Eval). Repeat until all dimensions pass and the score meets the risk level.
+
+---
+
+### Phase 6: Ship
+
+When the eval scorecard passes, the skill is ready. Copy it to the target install location.
+
+**Final checklist:**
+- [ ] `quick_validate.py` exits 0
+- [ ] Eval scorecard all dimensions pass
+- [ ] SKILL.md body under 500 lines
+- [ ] File references one level deep
+- [ ] Scripts are non-interactive with good `--help`
+- [ ] `evals/evals.json` exists with at least 2 test cases
+- [ ] No time-sensitive information
+- [ ] Instructions are agent-agnostic (no platform-specific tool names)
+
+## Reference Files
+
+- `references/testing-guide.md` — pressure testing, assertion design, eval-driven testing, grading principles
+- `references/writing-craft.md` — instruction design, persuasion principles, anti-patterns, bulletproofing, cross-platform

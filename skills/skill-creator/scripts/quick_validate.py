@@ -10,6 +10,7 @@ from pathlib import Path
 import yaml
 
 MAX_SKILL_NAME_LENGTH = 64
+MAX_SKILL_BODY_LINES = 500
 
 
 def validate_skill(skill_path):
@@ -75,18 +76,38 @@ def validate_skill(skill_path):
                 f"Maximum is {MAX_SKILL_NAME_LENGTH} characters.",
             )
 
+    # Name must match directory name
+    dir_name = skill_path.name
+    if name and name != dir_name:
+        return False, f"Name '{name}' does not match directory name '{dir_name}'"
+
     description = frontmatter.get("description", "")
     if not isinstance(description, str):
         return False, f"Description must be a string, got {type(description).__name__}"
     description = description.strip()
-    if description:
-        if "<" in description or ">" in description:
-            return False, "Description cannot contain angle brackets (< or >)"
-        if len(description) > 1024:
-            return (
-                False,
-                f"Description is too long ({len(description)} characters). Maximum is 1024 characters.",
-            )
+    if not description:
+        return False, "Description must not be empty"
+    if "<" in description or ">" in description:
+        return False, "Description cannot contain angle brackets (< or >)"
+    if len(description) > 1024:
+        return (
+            False,
+            f"Description is too long ({len(description)} characters). Maximum is 1024 characters.",
+        )
+
+    # SKILL.md body must be under MAX_SKILL_BODY_LINES
+    body = content[match.end():]
+    body_lines = len(body.splitlines())
+    if body_lines > MAX_SKILL_BODY_LINES:
+        return (
+            False,
+            f"SKILL.md body is {body_lines} lines. Maximum is {MAX_SKILL_BODY_LINES} lines.",
+        )
+
+    # evals/evals.json must exist
+    evals_json = skill_path / "evals" / "evals.json"
+    if not evals_json.exists():
+        return False, "evals/evals.json not found"
 
     return True, "Skill is valid!"
 

@@ -22,7 +22,7 @@ ALLOWED_RESOURCES = {"scripts", "references", "assets"}
 
 SKILL_TEMPLATE = """---
 name: {skill_name}
-description: [TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it.]
+description: "TODO: Complete and informative explanation of what the skill does and when to use it. Include WHEN to use this skill - specific scenarios, file types, or tasks that trigger it."
 ---
 
 # {skill_title}
@@ -170,7 +170,7 @@ This placeholder represents where asset files would be stored.
 Replace with actual asset files (templates, images, fonts, etc.) or delete if not needed.
 
 Asset files are NOT intended to be loaded into context, but rather used within
-the output Codex produces.
+the output the agent produces.
 
 Example asset files from other skills:
 - Brand guidelines: logo.png, slides_template.pptx
@@ -189,6 +189,26 @@ Example asset files from other skills:
 
 Note: This is a text placeholder. Actual assets can be any file type.
 """
+
+EVALS_TEMPLATE = '''\
+{{
+  "skill_name": "{skill_name}",
+  "evals": [
+    {{
+      "id": 1,
+      "prompt": "TODO: Write a realistic user prompt that triggers this skill",
+      "expected_output": "TODO: Describe what success looks like",
+      "files": []
+    }},
+    {{
+      "id": 2,
+      "prompt": "TODO: Write an edge-case or competing-skill prompt",
+      "expected_output": "TODO: Describe expected behavior",
+      "files": []
+    }}
+  ]
+}}
+'''
 
 
 def normalize_skill_name(skill_name):
@@ -293,6 +313,18 @@ def init_skill(skill_name, path, resources, include_examples, interface_override
         print(f"[ERROR] Error creating SKILL.md: {e}")
         return None
 
+    # Create evals/evals.json
+    try:
+        evals_dir = skill_dir / "evals"
+        evals_dir.mkdir(exist_ok=True)
+        evals_json = evals_dir / "evals.json"
+        evals_content = EVALS_TEMPLATE.format(skill_name=skill_name)
+        evals_json.write_text(evals_content)
+        print("[OK] Created evals/evals.json")
+    except Exception as e:
+        print(f"[ERROR] Error creating evals: {e}")
+        return None
+
     # Create resource directories if requested
     if resources:
         try:
@@ -305,14 +337,15 @@ def init_skill(skill_name, path, resources, include_examples, interface_override
     print(f"\n[OK] Skill '{skill_name}' initialized successfully at {skill_dir}")
     print("\nNext steps:")
     print("1. Edit SKILL.md to complete the TODO items and update the description")
+    print("2. Fill in evals/evals.json with realistic test prompts")
     if resources:
         if include_examples:
-            print("2. Customize or delete the example files in scripts/, references/, and assets/")
+            print("3. Customize or delete the example files in scripts/, references/, and assets/")
         else:
-            print("2. Add resources to scripts/, references/, and assets/ as needed")
+            print("3. Add resources to scripts/, references/, and assets/ as needed")
     else:
-        print("2. Create resource directories only if needed (scripts/, references/, assets/)")
-    print("3. Run the validator when ready to check the skill structure")
+        print("3. Create resource directories only if needed (scripts/, references/, assets/)")
+    print("4. Run the validator when ready to check the skill structure")
 
     return skill_dir
 
