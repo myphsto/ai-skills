@@ -1,0 +1,23 @@
+{
+  "skill_name": "powershell-2025-changes",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "My scripts use MSOnline and AzureAD modules. What do I need to migrate to before they stop working?",
+      "expected_output": "Identifies MSOnline/AzureAD as fully retired. Shows migration to Microsoft.Graph with Connect-MgGraph, Get-MgUser, Update-MgUser. Provides command mapping. Mentions Microsoft Entra PowerShell as alternative.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "WMIC was removed from Windows 11. How do I get process and OS info now?",
+      "expected_output": "Shows migration from wmic to Get-CimInstance for Win32_Process and Win32_OperatingSystem. Provides Get-Process and Get-ComputerInfo as alternatives.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "What's new in PowerShell 7.5? I want to know about the latest features.",
+      "expected_output": "Delegates to powershell-7.5-features skill instead of answering from this skill. This skill is for breaking changes and migrations, not current features.",
+      "files": []
+    }
+  ]
+}

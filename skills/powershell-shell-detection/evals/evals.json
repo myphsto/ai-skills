@@ -1,0 +1,23 @@
+{
+  "skill_name": "powershell-shell-detection",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "How do I detect if my script is running in PowerShell or Git Bash on Windows?",
+      "expected_output": "Shows $env:PSModulePath check for PowerShell, $MSYSTEM check for Git Bash. Provides Get-ShellType function or detect_shell bash function. Mentions $PSVersionTable for version detection.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "My Git Bash script is converting paths unexpectedly when calling Windows binaries. How do I fix this?",
+      "expected_output": "Explains MSYS_NO_PATHCONV=1 and MSYS2_ARG_CONV_EXCL. Shows what triggers conversion (leading /, colons) and what's exempt (=, drive specifiers). Provides cygpath for manual conversion.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "How do I call a PowerShell script from Git Bash and pass a Windows path?",
+      "expected_output": "Shows pwsh -Command or pwsh -File invocation from bash. Uses cygpath -w to convert Unix path to Windows format before passing. Quotes paths with spaces.",
+      "files": []
+    }
+  ]
+}

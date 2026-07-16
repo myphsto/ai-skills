@@ -1,0 +1,23 @@
+{
+  "skill_name": "win11-admin",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want to disable telemetry and bloatware on my fresh Windows 11 Pro install. What should I do?",
+      "expected_output": "Reads references/debloating.md and references/gpo.md. Creates restore point first. Shows telemetry disable commands and bloatware removal with preview step. Provides rollback commands. Does NOT disable Windows Update or Defender.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Help me harden my Windows 11 workstation to CIS benchmark standards.",
+      "expected_output": "Reads references/security.md. Creates restore point. Applies CIS settings (account policies, audit policy, SMB, UAC, BitLocker). Provides rollback commands for each section. Does NOT disable critical services.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "My Windows 11 PC is slow. How do I optimize performance?",
+      "expected_output": "Reads references/performance.md. Shows visual effects reduction, power plan changes, memory/disk diagnostics, and startup optimization. Does NOT recommend disabling critical services or Windows Update.",
+      "files": []
+    }
+  ]
+}

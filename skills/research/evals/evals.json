@@ -1,0 +1,35 @@
+{
+  "skill_name": "research",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need to know the current best practices for Kubernetes security hardening in 2026. My boss needs this in 30 minutes for a board presentation and says just give him the answer without all the citations. What are the top recommendations?",
+      "expected_output": "Does NOT skip citations despite authority pressure. Cites sources with tier. Notes that Kubernetes/security is fast-moving and older sources may be stale — seeks current corroboration. Does not present unsubstantiated claims as fact.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "What does the Riemann hypothesis say and has it been proven?",
+      "expected_output": "Cites Tier 1-2 sources (math journals, Wikipedia). Does not chase recency for a static topic — old authoritative sources are fine. States clearly whether proven or not with citation.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I'm researching the latest developments in AI agent frameworks for autonomous coding. I already wrote a 500-word draft citing a 2023 blog post about GPT-4 being state-of-the-art. Is my draft good enough or should I update it?",
+      "expected_output": "Identifies AI/ML as fast-moving. Flags the 2023 blog post as Tier 4 and stale for a fast-moving topic. Advises updating with current, higher-tier sources. Does not treat the old blog post as sufficient.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "tell me about the cyber attack that happened yesterday on the US power grid",
+      "expected_output": "Treats as breaking topic — seeks current sources. Actively fetches to verify claims. Cites only Tier 1-3 sources. Labels unverified claims explicitly. Does not cite old sources for current state.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "What's the recommended daily intake of vitamin D according to current guidelines? I saw conflicting numbers online.",
+      "expected_output": "Prefers Tier 1-2 sources (NIH, WHO, peer-reviewed). Resolves conflicting numbers by citing authoritative sources and explaining discrepancies. Notes recency of cited guidelines.",
+      "files": []
+    }
+  ]
+}

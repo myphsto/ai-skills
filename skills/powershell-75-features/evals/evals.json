@@ -1,0 +1,29 @@
+{
+  "skill_name": "powershell-75-features",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "How do I serialize a PowerShell object to XML string without writing to a file in PowerShell 7.5?",
+      "expected_output": "Uses ConvertTo-CliXml / ConvertFrom-CliXml. Shows object -> XML string -> restored object round-trip. Explains difference from Export/Import-Clixml (file I/O vs string). Mentions clipboard use case.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I want to find all log files older than 30 days in PowerShell 7.5.",
+      "expected_output": "Uses Test-Path -OlderThan with (Get-Date).AddDays(-30). Shows combining with Get-ChildItem for cleanup. Mentions -NewerThan counterpart.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "How do I download a file and check the status code in one step with PowerShell 7.5?",
+      "expected_output": "Uses Invoke-WebRequest -OutFile -PassThru. Shows accessing $response.StatusCode and $response.RawContentLength. Explains this eliminates needing a second Get-Item call.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "I'm upgrading from PowerShell 7.4 to 7.5. Will my existing scripts break?",
+      "expected_output": "States that PowerShell 7.5 maintains backward compatibility with 7.0-7.4 scripts. New parameters are opt-in. No breaking changes to existing cmdlets. Module compatibility preserved.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "skill_name": "skill-creator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a new skill for stress-testing arguments and plans.",
+      "expected_output": "The agent captures intent, classifies as Technique type, drafts SKILL.md with evals, runs validation, and produces an inline eval scorecard before shipping.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Help me create a skill. I don't have uv or python dependencies installed.",
+      "expected_output": "The agent continues with manual workflow — writes SKILL.md, runs eval inline, and skips automated script steps.",
+      "files": []
+    }
+  ]
+}

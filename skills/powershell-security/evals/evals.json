@@ -1,0 +1,23 @@
+{
+  "skill_name": "powershell-security",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "How do I securely store and retrieve database credentials in my PowerShell automation script?",
+      "expected_output": "Recommends SecretManagement + SecretStore. Shows Register-SecretVault, Set-Secret, Get-Secret workflow. Warns against hardcoding credentials. Provides rollback or alternative (Get-Credential for interactive). No plaintext secrets in examples.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I need to set up JEA so my helpdesk team can restart specific services without full admin rights.",
+      "expected_output": "Shows full JEA setup: New-PSRoleCapabilityFile with ValidateSet for allowed services, New-PSSessionConfigurationFile with RoleDefinitions, Register-PSSessionConfiguration. Includes audit logging via -TranscriptDirectory. Explains NoLanguage mode.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "How do I enable Script Block Logging and WDAC for PowerShell on our production servers?",
+      "expected_output": "Shows registry path for ScriptBlockLogging (HKLM:\\Software\\Policies\\Microsoft\\Windows\\PowerShell\\ScriptBlockLogging). Shows WDAC policy creation with New-CIPolicy and Set-RuleOption. Includes code signing with Set-AuthenticodeSignature. Mentions Constrained Language Mode.",
+      "files": []
+    }
+  ]
+}

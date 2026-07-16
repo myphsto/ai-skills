@@ -1,0 +1,65 @@
+{
+  "skill_name": "github-pr-review",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Review this PR: https://github.com/owner/repo/pull/42",
+      "expected_output": "Agent resolves PR context (repo owner/repo, number 42, head_sha), fetches PR files JSON, builds review packet, classifies files into lanes, identifies candidate signals, verifies inline placement before posting, posts comments with hidden markers, and posts a summary comment. Output includes Findings, Summary, and Posting Status sections.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Review my changes before I push",
+      "expected_output": "Agent enters local draft mode, resolves local branch and base from git status, builds diff-based review packet from local git, performs review and reports findings with path:line anchors, does NOT post any GitHub comments (no PR exists), and suggests fixes before pushing. Output explicitly states what it can and cannot prove.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Create a PR for the feature I just implemented on branch feature/new-feature",
+      "expected_output": "Agent runs pre-create local review on the diff, reports findings and suggests fixes, pushes the branch, creates the PR with gh pr create, runs post-create remote review, posts inline comments with markers, and posts a summary comment with review status. Two-phase review: local first, then remote.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Re-review https://github.com/owner/repo/pull/42 - I pushed a new commit",
+      "expected_output": "Agent reads existing comments, detects github-pr-review markers from prior review, skips findings with matching markers, and only posts new findings. Agent replies to existing threads for unresolved issues instead of creating new inline comments.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Review this large PR: https://github.com/owner/repo/pull/99 - it has 60 changed files",
+      "expected_output": "Agent enters large_pr_mode (30+ files threshold), prioritizes high-risk lanes (auth_security_config, public_api, persistence_migration), limits file fetches to budget (5 head files, 2 supporting per finding), reports omitted_context as residual risk, and does NOT read every file.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Review https://github.com/owner/repo/pull/42 - I'm concerned about the security changes",
+      "expected_output": "Agent finds a candidate that looks like a security issue (e.g., missing auth check), applies devil's advocate checklist, discovers the framework already guards against the issue (e.g., Spring Security defaults), downgrades or drops the finding, and marks it as rejected or false_positive in the artifact.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Review https://github.com/owner/repo/pull/42",
+      "expected_output": "Agent identifies a finding where the target line is context-only or ambiguous, detects the line is not in the current PR diff during inline placement verification, converts the finding to a summary comment, and does NOT post an inline comment at the wrong line.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "Review https://github.com/owner/repo/pull/42 and post the findings",
+      "expected_output": "Agent writes comment bodies to temporary files before posting (file-backed gh API calls), avoids shell quoting issues with backticks/links/markers, and posts comments with hidden duplicate markers. After posting, summarizes counts: summary comments, inline comments, fallbacks, skipped duplicates, and failures.",
+      "files": []
+    },
+    {
+      "id": 9,
+      "prompt": "Review https://github.com/owner/repo/pull/7 - it's a 2-line typo fix in README.md",
+      "expected_output": "Agent completes the review, finds no confirmed findings (trivial change), says so in the local response with one concise evidence line, and states that no GitHub comments are recommended. Agent does NOT post an LGTM or caveat comment.",
+      "files": []
+    },
+    {
+      "id": 10,
+      "prompt": "Review https://github.com/owner/repo/pull/42 but I don't have gh authenticated",
+      "expected_output": "Agent checks gh auth status, detects authentication failure, asks the user to authenticate with gh auth login, and does NOT proceed with remote review. Agent does NOT expose tokens or environment variables.",
+      "files": []
+    }
+  ]
+}

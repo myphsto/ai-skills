@@ -1,0 +1,53 @@
+{
+  "skill_name": "skill-installer",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "What skills are available to install?",
+      "expected_output": "Invokes list-skills.py script. Presents numbered list of curated skills from openai/skills repo. Annotes already-installed skills. Asks user which ones to install. Does NOT manually fetch GitHub API.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Install the powershell-master skill.",
+      "expected_output": "Uses install-skill-from-github.py with --repo openai/skills --path skills/.curated/powershell-master. Installs to ~/.agents/skills/powershell-master. Tells user to restart agent after install. Does NOT manually clone or download.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Install a skill from https://github.com/myorg/myrepo/tree/main/skills/my-skill",
+      "expected_output": "Uses install-skill-from-github.py with --url argument. Parses owner/repo/ref/path from URL. Installs to ~/.agents/skills/my-skill. Handles auth via GITHUB_TOKEN if needed. Falls back to git sparse checkout on download failure.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "What experimental skills are available?",
+      "expected_output": "Invokes list-skills.py with --path skills/.experimental. Labels source as experimental. Lists skills with installed annotations. Does not confuse with curated list.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Install a skill from a private GitHub repository.",
+      "expected_output": "Uses install-skill-from-github.py with --repo and --path. Mentions GITHUB_TOKEN or GH_TOKEN for authentication. Explains git fallback (HTTPS then SSH) if download fails. Does not hardcode tokens.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "Install the skill-installer skill.",
+      "expected_output": "Script aborts with 'Destination already exists' error. Agent reports the error to the user and explains the skill is already installed. Does NOT attempt to overwrite or force install.",
+      "files": []
+    },
+    {
+      "id": 7,
+      "prompt": "Install the system skill for code review.",
+      "expected_output": "Agent explains that system skills (skills/.system) are preinstalled and do not need installation. Does NOT attempt to install from skills/.system. If user insists, explains overwrite is possible but unnecessary.",
+      "files": []
+    },
+    {
+      "id": 8,
+      "prompt": "What skills are available to install? The GitHub API is returning a 500 error.",
+      "expected_output": "Script fails with HTTP error. Agent explains the error to the user and exits gracefully. Does NOT retry silently or fabricate a skills list. Suggests trying again later or checking GitHub status.",
+      "files": []
+    }
+  ]
+}

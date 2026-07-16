@@ -1,0 +1,23 @@
+{
+  "skill_name": "devils-advocate",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Critique this design: We're building a real-time collaborative document editor using WebSockets. Each document has a single source of truth on the server. Clients send operational transforms that the server applies and broadcasts to all connected clients. We plan to use CRDTs for conflict resolution.",
+      "expected_output": "Exactly three sections: Three Failure Modes (3 items stating what fails, why, and trigger condition), Two Unproven Assumptions (2 items naming assumption and missing evidence), One Unaddressed Counter-Argument (1 credible opposing position). No praise, no hedging, no solution proposals, no filler. Blunt and specific.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Devil's advocate on this: I'm adding a trailing comma to a JSON config file. That's it. One line change.",
+      "expected_output": "Exactly three sections with strict counts (3/2/1). Critique should be proportional to the trivial change — attacking whether the process or claimed impact is inflated, not manufacturing architectural criticism for a one-line copy fix. No filler objections.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Challenge this reasoning: We should migrate our entire monolith to microservices because our team grew from 5 to 15 people and deployment frequency has dropped from daily to weekly.",
+      "expected_output": "Exactly three sections: Three Failure Modes (3 items), Two Unproven Assumptions (2 items), One Unaddressed Counter-Argument (1 item). Targets the strongest implied claim (that microservices will solve deployment frequency), not the easiest sentence. Covers weak causality, base-rate neglect, scale breakdowns, and second-order effects. No solution proposals.",
+      "files": []
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "skill_name": "powershell-master",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write a cross-platform PowerShell script that reads a config JSON file from the script directory and processes it.",
+      "expected_output": "Uses Join-Path or $PSScriptRoot for path handling. Specifies UTF-8 encoding. Uses $IsWindows/$IsLinux/$IsMacOS for platform detection. Avoids aliases. Uses full cmdlet names like Get-Content, ConvertFrom-Json.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Create a GitHub Actions workflow that runs Pester tests on Windows, Linux, and macOS.",
+      "expected_output": "Shows multi-platform matrix with ubuntu-latest, windows-latest, macos-latest. Uses shell: pwsh. Installs Pester, runs Invoke-Pester with NUnitXml output. Includes checkout step.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "Write a production-ready PowerShell function with proper parameter validation, error handling, and pipeline support.",
+      "expected_output": "Uses [CmdletBinding()], param() with Mandatory, ValidateNotNullOrEmpty, ValueFromPipeline. Includes begin/process/end blocks. Has try/catch/finally. Uses Write-Verbose. Includes comment-based help.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "How do I configure JEA endpoints for delegated administration in PowerShell?",
+      "expected_output": "Delegates to powershell-security skill. Does NOT answer directly - JEA is covered by the security skill.",
+      "files": []
+    }
+  ]
+}
