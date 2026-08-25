@@ -1,6 +1,11 @@
 ---
 name: win11-admin
-description: "Windows 11 system administration and hardening. PROACTIVELY activate for: (1) Registry tweaking and optimization, (2) Windows services management and cleanup, (3) Group Policy (GPO) configuration, (4) Debloating and telemetry control, (5) System optimization and performance tuning, (6) CIS/STIG security hardening, (7) Windows Firewall and network configuration, (8) Windows Defender and security management, (9) Scheduled tasks and automation, (10) Driver and hardware management, (11) Windows Update management, (12) User account and permission management. Provides: Production-ready PowerShell commands, registry paths, GPO settings, hardening baselines, and rollback procedures for Windows 11 Pro/Enterprise."
+description: "Windows 11 system administration and hardening: registry, services, Group Policy, debloating and telemetry, performance tuning, CIS/STIG hardening, firewall, Defender, scheduled tasks, drivers, Windows Update, and user accounts. Use when asked for any Windows 11 Pro/Enterprise admin task. Provides production-ready PowerShell commands, registry paths, GPO settings, hardening baselines, and rollback procedures."
+license: MIT
+compatibility: "Windows 11 Pro/Enterprise; PowerShell 5.1 or 7+; admin rights for most operations"
+metadata:
+  author: myphsto
+  version: "1.0"
 ---
 
 # Windows 11 Administration & Hardening

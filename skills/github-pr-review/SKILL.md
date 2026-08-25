@@ -1,8 +1,10 @@
 ---
 name: github-pr-review
 description: "Reviews GitHub pull requests and local pre-push branch diffs, preparing actionable code-review findings, inline comment drafts, or summary feedback. Use when asked to review a GitHub PR, inspect a PR URL/number or diff, run a local draft/preflight review before push or PR creation, assess merge readiness, draft code-review comments, or post review findings through gh after confirmation."
+license: MIT
+compatibility: "Requires the gh CLI (authenticated), git, and network access to GitHub"
 metadata:
-  author: "kohls"
+  author: myphsto
   version: "1.0"
 ---
 

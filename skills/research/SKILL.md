@@ -1,6 +1,10 @@
 ---
 name: research
 description: "Use when researching any topic, looking up information, making factual claims, citing sources, or answering questions that require external knowledge or evidence. Also triggers when the user asks for facts, data, statistics, comparisons, or recommendations backed by sources."
+license: MIT
+metadata:
+  author: myphsto
+  version: "1.0"
 ---
 
 # Research

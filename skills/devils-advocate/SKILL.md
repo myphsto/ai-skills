@@ -1,6 +1,10 @@
 ---
 name: devils-advocate
 description: "Stress-test arguments, plans, designs, diffs, and repo decisions by exposing logic holes, weak assumptions, and serious opposing positions. Use when the user asks for devil's advocate, hostile critic, hole-poking, argument teardown, challenge this reasoning, counter-argument, or wants the strongest critique of a feature, design, plan, branch, repo, or implementation decision. Also triggers on potato in critique context."
+license: MIT
+metadata:
+  author: myphsto
+  version: "1.0"
 ---
 
 # Devil's Advocate

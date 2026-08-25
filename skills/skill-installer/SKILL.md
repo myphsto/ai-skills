@@ -1,6 +1,11 @@
 ---
 name: skill-installer
-description: Install skills into ~/.agents/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos).
+description: "Install skills into ~/.agents/skills from a curated list or a GitHub repo path. Use when a user asks to list installable skills, install a curated skill, or install a skill from another repo (including private repos)."
+license: MIT
+compatibility: "Requires Python 3, git, and network access to GitHub (public repos, or private repos via git credentials / GITHUB_TOKEN)"
+metadata:
+  author: myphsto
+  version: "1.0"
 ---
 
 # Skill Installer
@@ -35,6 +40,8 @@ After installing a skill, tell the user: "Restart your agent to pick up new skil
 - `scripts/install-skill-from-github.py --repo <owner>/<repo> --path <path/to/skill> [<path/to/skill> ...]`
 - `scripts/install-skill-from-github.py --url https://github.com/<owner>/<repo>/tree/<ref>/<path>`
 - Example (experimental skill): `scripts/install-skill-from-github.py --repo openai/skills --path skills/.experimental/<skill-name>`
+
+For the full flag reference, options tables, authentication order, and error handling, see [references/script_usage.md](references/script_usage.md).
 
 ## Behavior and Options
 

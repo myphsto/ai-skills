@@ -1,6 +1,11 @@
 ---
 name: powershell-master
-description: "PowerShell hub skill for cross-platform scripting, CI/CD, and general PowerShell questions. PROACTIVELY activate for: (1) general PowerShell questions not covered by specialized skills, (2) cross-platform PowerShell 7+ scripting, (3) CI/CD pipeline PowerShell integration, (4) script debugging and optimization, (5) PowerShell module discovery. DO NOT activate for: security (use powershell-security), PSResourceGet and 7.5/7.6 features (use powershell-75-features), shell detection (use powershell-shell-detection), 2025 breaking changes (use powershell-2025-changes), Windows admin (use win11-admin)."
+description: "PowerShell hub skill for cross-platform scripting, CI/CD, debugging, optimization, and module discovery. Use when a general PowerShell 7+ question is not covered by a specialized skill. Do not use for: security (use powershell-security), 7.5/7.6 features or PSResourceGet (use powershell-75-features), shell detection (use powershell-shell-detection), 2025 breaking changes (use powershell-2025-changes), or Windows admin (use win11-admin)."
+license: MIT
+compatibility: "PowerShell 7+ (pwsh) on Windows, Linux, or macOS; Windows PowerShell 5.1 for legacy notes"
+metadata:
+  author: myphsto
+  version: "1.0"
 ---
 
 # PowerShell Master
