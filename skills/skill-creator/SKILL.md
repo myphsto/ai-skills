@@ -1,6 +1,11 @@
 ---
 name: skill-creator
 description: "Guide for creating, updating, evaluating, and scoring effective skills. Use when you want to create a new skill, update an existing skill, or fully evaluate and score a skill. Extends your agent's capabilities with specialized knowledge, workflows, or tool integrations."
+license: MIT
+compatibility: "Python 3 + pyyaml for helper scripts (via uv or a local venv); manual workflow fallback if unavailable"
+metadata:
+  author: myphsto
+  version: "1.0"
 ---
 
 # Skill Creator
@@ -59,9 +64,13 @@ Every skill consists of a required SKILL.md file and optional bundled resources:
 ```
 skill-name/
 ├── SKILL.md (required)
-│   ├── YAML frontmatter metadata (required)
+│   ├── YAML frontmatter (required)
 │   │   ├── name: (required)
-│   │   └── description: (required)
+│   │   ├── description: (required)
+│   │   ├── license: (optional)
+│   │   ├── compatibility: (optional)
+│   │   ├── metadata: (optional)
+│   │   └── allowed-tools: (optional, experimental)
 │   └── Markdown instructions (required)
 ├── evals/
 │   └── evals.json (required)
@@ -75,7 +84,7 @@ skill-name/
 
 Every SKILL.md consists of:
 
-- **Frontmatter** (YAML): Contains `name` and `description` fields. These are the only fields that the agent reads to determine when the skill gets used, thus it is very important to be clear and comprehensive in describing what the skill is, and when to use it.
+- **Frontmatter** (YAML): Required `name` and `description` are the only fields the agent reads to determine when the skill gets used — be clear and comprehensive about what the skill does and when to use it. Optional spec fields: `license`, `compatibility`, `metadata` (covered in Phase 2) and experimental `allowed-tools` — see the [Agent Skills spec](https://agentskills.io/specification).
 - **Body** (Markdown): Instructions and guidance for using the skill. Only loaded AFTER the skill triggers (if at all).
 
 #### Evals (required)
@@ -303,10 +312,7 @@ When creating a new skill from scratch, run `init_skill.py`:
 scripts/init_skill.py <skill-name> --path <output-directory> [--resources scripts,references,assets] [--examples]
 ```
 
-**Dependencies:** The scripts require `pyyaml`. Before running, check if it is available:
-- If `uv` is installed, use `uv run scripts/init_skill.py ...` — it handles dependencies automatically.
-- If `uv` is not available and `pyyaml` is missing, create a local venv: `python3 -m venv .venv && .venv/bin/pip install -r scripts/requirements.txt`, then run `.venv/bin/python scripts/init_skill.py ...`.
-- If declined or unavailable, continue with manual workflow — the scripts are simple enough to run without them.
+**Dependencies:** The scripts require `pyyaml` — use `uv run scripts/<script>.py ...` if `uv` is available (it handles dependencies), otherwise create a local venv: `python3 -m venv .venv && .venv/bin/pip install -r scripts/requirements.txt`, then run `.venv/bin/python scripts/<script>.py ...`. If neither is available or declined, continue with the manual workflow — the scripts are simple enough to skip.
 
 The script creates the skill directory, SKILL.md template, `evals/evals.json`, and optional resource directories.
 
@@ -318,6 +324,9 @@ Read `references/writing-craft.md` for instruction design principles — how to 
 
 - `name`: The skill name (must match directory name)
 - `description`: The primary triggering mechanism — describes what the skill does AND when to use it
+- `license` (optional): License name or bundled license file reference
+- `compatibility` (optional): Environment requirements — include only if the skill needs a specific OS, system package, or network access (max 500 chars)
+- `metadata` (optional): String → string map. For a skill catalog, keep a consistent block across all skills (e.g., `author`, `version`)
 
 **YAML safety:** Use double quotes for string-valued frontmatter fields to avoid YAML plain-scalar failures on punctuation:
 
@@ -372,7 +381,7 @@ After drafting, run structural validation immediately:
 scripts/quick_validate.py <path/to/skill-folder>
 ```
 
-**Dependencies:** The scripts require `pyyaml`. Use `uv run scripts/quick_validate.py ...` if `uv` is available. Otherwise, create a local venv: `python3 -m venv .venv && .venv/bin/pip install -r scripts/requirements.txt`, then run `.venv/bin/python scripts/quick_validate.py ...`.
+**Dependencies:** Same as Phase 2 (`pyyaml` via `uv` or a local venv) — see above.
 
 Do not proceed to eval until validation passes. Re-run after every frontmatter edit.
 
@@ -380,7 +389,7 @@ Do not proceed to eval until validation passes. Re-run after every frontmatter e
 
 ### Phase 3: Validate
 
-Run `quick_validate.py` to check YAML frontmatter format, required fields, naming rules, line count, and name-to-directory match. Fix any issues before proceeding.
+Run `quick_validate.py` to check YAML frontmatter format, required fields, naming rules, line count, name-to-directory match, plus advisory best-practice warnings (non-fatal; `--strict` fails on them). Fix hard errors before proceeding; address warnings as part of Phase 4/5.
 
 ---
 

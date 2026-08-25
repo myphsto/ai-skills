@@ -10,8 +10,17 @@
     {
       "id": 2,
       "prompt": "Help me create a skill. I don't have uv or python dependencies installed.",
-      "expected_output": "The agent continues with manual workflow — writes SKILL.md, runs eval inline, and skips automated script steps.",
-      "files": []
+      "expected_output": "The agent continues with manual workflow — writes SKILL.md, runs eval inline, and skips automated script steps."
+    },
+    {
+      "id": 3,
+      "prompt": "Create a skill for hardening Windows 11 endpoints with PowerShell. It only works on Windows with admin rights.",
+      "expected_output": "The agent includes a `compatibility:` frontmatter field stating the Windows 11/admin requirement (not just prose in the body), and quick_validate.py passes on the result."
+    },
+    {
+      "id": 4,
+      "prompt": "My skill's SKILL.md has `compatibility: Requires docker` and a `metadata:` block, but quick_validate.py rejects it with 'Unexpected key(s) in frontmatter'. What's wrong?",
+      "expected_output": "The agent recognizes `compatibility` and `metadata` as valid spec frontmatter fields, fixes or explains the validator issue (validator bug, not the skill), and confirms the skill itself is valid per the Agent Skills spec."
     }
   ]
 }
