@@ -53,8 +53,7 @@ RHEL family use `systemd-nspawn` for system containers and Podman for
 application containers (see `linux-container-engine`). KVM/libvirt is identical
 across families. SELinux relabels bind-mounted host storage — append `:z`
 (shared) or `:Z` (private). See
-[`references/selinux-reference.md`](references/selinux-reference.md)
-and `../../docs/multi-distro/plan.md`.
+[`references/selinux-reference.md`](references/selinux-reference.md).
 
 ## Use when
 

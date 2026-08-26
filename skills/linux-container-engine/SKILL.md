@@ -137,7 +137,22 @@ sudo systemctl enable --now docker
 docker version
 ```
 
-`docker` group membership is **root-equivalent** on the host — only add trusted admins.
+`docker` group membership is **root-equivalent** on the host — only add trusted
+admins.
+
+### Distro-packaged Docker (Debian/Ubuntu: `docker.io` + `docker-compose-v2`)
+
+The distro archive ships `docker.io` (no compose plugin). Fine for
+non-production use (the upstream-repo path above is for production):
+
+```bash
+sudo apt install -y docker.io docker-compose-v2
+sudo systemctl enable --now docker
+docker compose version     # provided by docker-compose-v2
+```
+
+Without `docker-compose-v2`, `docker compose` is an unknown command and every
+compose workflow breaks — install it whenever you use `docker.io`.
 
 ### Podman (preferred on RHEL; available on Debian/Ubuntu)
 

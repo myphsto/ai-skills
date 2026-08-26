@@ -31,6 +31,7 @@ below uses the Debian/Ubuntu paths; full RHEL detail is in
 | Memcached service | `memcached` | `memcached` |
 | Redis CLI | `redis-cli` | `redis-cli` |
 | Memcached SASL pkg | `libsasl2-modules` (+ `sasldb`) | `cyrus-sasl`, `cyrus-sasl-plain` |
+| `memcached-tool` path | `/usr/share/memcached/scripts/memcached-tool` (not on PATH) | `/usr/bin/memcached-tool` |
 | Logs | `journalctl -u redis-server` / `-u memcached` | `journalctl -u redis` / `-u memcached` |
 
 Both daemons bind to localhost by default on a fresh package install — keep it

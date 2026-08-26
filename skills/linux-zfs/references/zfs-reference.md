@@ -163,7 +163,9 @@ zfs release protect tank/data@nightly    # remove a hold
 # Clone (instant, shares blocks; lives as a writable dataset)
 zfs clone tank/data@nightly tank/data-dev
 zfs destroy -R tank/data-dev             # -R if it gained snapshots/children (clones inherit origin snapshots)
-zfs promote tank/data-dev                # decouple from origin (clone becomes independent)
+zfs promote tank/data-dev                # decouple from origin (clone becomes independent);
+                                          # the base snapshot moves to the promoted dataset
+                                          # (tank/data@nightly -> tank/data-dev@nightly)
 
 # Rollback (destroys changes made after the snapshot — confirm first)
 zfs rollback tank/data@2026-08-25_0200

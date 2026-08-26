@@ -495,18 +495,21 @@ AppArmor profile `/etc/apparmor.d/usr.sbin.named` restricts which paths `named` 
 
 ## systemd integration
 
-The unit is `named.service`, aliased as `bind9.service` — both names work.
+The unit is `named.service`, aliased as `bind9.service`. `systemctl`
+accepts both names, but **journalctl does not resolve the alias** — logs are
+recorded under `named.service`, so always use `journalctl -u named`
+(`journalctl -u bind9` returns no entries on Debian/Ubuntu).
 
 ```bash
-sudo systemctl status bind9           # state, PID, last log lines
-sudo systemctl restart bind9          # full restart — drops cache
-sudo systemctl reload bind9           # SIGHUP — reload config, keep cache
-sudo systemctl enable bind9           # start at boot
+sudo systemctl status named            # state, PID, last log lines (bind9 alias works too)
+sudo systemctl restart named           # full restart — drops cache
+sudo systemctl reload named            # SIGHUP — reload config, keep cache
+sudo systemctl enable named            # start at boot
 
-sudo journalctl -u bind9                 # all logs for the unit
-sudo journalctl -u bind9 -f              # follow
-sudo journalctl -u bind9 -p err          # errors only
-sudo journalctl -u bind9 -b              # since last boot
+sudo journalctl -u named                 # all logs for the unit (NOT -u bind9)
+sudo journalctl -u named -f              # follow
+sudo journalctl -u named -p err          # errors only
+sudo journalctl -u named -b              # since last boot
 ```
 
 Rule: always `sudo named-checkconf` before `sudo systemctl reload bind9`. A bad config file makes `named` fail to reload (old config keeps running) or, on full restart, fail to start at all.
@@ -532,7 +535,7 @@ Diagnostic first-line commands, in the order you should run them:
 sudo named-checkconf                              # 1. config syntax
 sudo named-checkzone example.com /etc/bind/zones/db.example.com   # 2. zone syntax
 sudo systemctl status bind9                       # 3. is it running?
-sudo journalctl -u bind9 -n 100 --no-pager        # 4. last 100 log lines
+sudo journalctl -u named -n 100 --no-pager        # 4. last 100 log lines
 dig @127.0.0.1 example.com SOA +short             # 5. does it answer?
 dig @127.0.0.1 example.com AXFR                   # 6. do transfers work?
 sudo ss -ltnup sport = :53                        # 7. is port 53 bound?

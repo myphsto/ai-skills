@@ -136,6 +136,16 @@ update_repo_safely() {
 
     # 2. Pull with rebase + autostash: local work is preserved.
     if git pull --rebase --autostash; then
+        # An autostash re-apply conflict does NOT fail the pull (exit 0):
+        # git leaves conflict markers in the tree and keeps the autostash.
+        # Detect unmerged files so we never report success on a conflicted tree.
+        if git status --porcelain | grep -qE '^(U.|.U|AA|DD)'; then
+            echo "ERROR: pull succeeded but re-applying your stashed local changes" >&2
+            echo "       hit a conflict in $path (conflict markers are in the tree)." >&2
+            echo "  Resolve the files, then:  git add <files>  (then git stash drop)" >&2
+            echo "  Or restore original state: git checkout HEAD -- <files> && git stash pop" >&2
+            return 1
+        fi
         echo "updated: $(git rev-parse --abbrev-ref HEAD) -> $(git log -1 --oneline)"
     else
         # 3. Conflict — stop and hand the operator a recovery path.
@@ -154,8 +164,7 @@ untracked files, no automatic conflict resolution.
 ## Canonical script on this server
 
 `/usr/local/bin/update-all-repos` is the menu-driven repo-update tool that
-must exist on every managed server (see
-`notes/update-all-repos-setup.md`). It
+must exist on every managed server. It
 must follow this doctrine: a porcelain dirty-check plus
 `git pull --rebase --autostash`, never `git reset --hard` + `git clean -fd`.
 The `sk-update-all-repos` script (`linux-site-deployment`) is the engine
@@ -176,7 +185,5 @@ grep -n 'pull --rebase --autostash' /usr/local/bin/update-all-repos
 
 ## References
 
-- `../../docs/continuous-improvement/safe-reversible-operations-standard.md`
-- `../../docs/continuous-improvement/value-stream-5s-qc-story.md`
 - [`references/safe-update-pattern.md`](references/safe-update-pattern.md)
 - [`references/details.md`](references/details.md)

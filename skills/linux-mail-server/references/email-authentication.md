@@ -226,6 +226,12 @@ example.com
 sudo mkdir -p /var/spool/postfix/opendkim
 sudo chown opendkim:postfix /var/spool/postfix/opendkim
 sudo chmod 750 /var/spool/postfix/opendkim
+# The socket itself is created opendkim:opendkim with mode 770, so the
+# postfix user also needs the opendkim group — otherwise smtpd logs
+# "connect to Milter service local:/opendkim/opendkim.sock: Permission
+# denied" and messages go out unsigned.
+sudo usermod -aG opendkim postfix
+sudo systemctl restart postfix
 ```
 
 ### Tell Postfix to use the milter

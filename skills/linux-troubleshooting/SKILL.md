@@ -37,9 +37,8 @@ sudo getenforce                                  # Enforcing?
 ```
 
 Fix with the right context/boolean/port — do **not** `setenforce 0`. See
-[`../linux-virtualization/references/selinux-reference.md`](../linux-virtualization/references/selinux-reference.md)
-and `docs/multi-distro/plan.md`. In `sk-*`
-scripts resolve unit names via `svc_name` from `common.sh`.
+[`../linux-virtualization/references/selinux-reference.md`](../linux-virtualization/references/selinux-reference.md).
+In `sk-*` scripts resolve unit names via `svc_name` from `common.sh`.
 
 ## Use when
 
@@ -165,8 +164,6 @@ sudo certbot renew --force-renewal
 ## References
 
 - [`references/diagnosis-tree.md`](references/diagnosis-tree.md)
-- `../../docs/continuous-improvement/incident-learning-standard.md`
-- `../../docs/continuous-improvement/safe-reversible-operations-standard.md`
 - [`references/packet-capture-and-tracing.md`](references/packet-capture-and-tracing.md) — `tcpdump` packet capture (BPF filters, pcap, ring buffers) and `strace`/`ltrace`/`lsof` process & file diagnostics
 - [`../linux-virtualization/references/selinux-reference.md`](../linux-virtualization/references/selinux-reference.md) — SELinux as a hidden cause (RHEL family)
 - [`references/details.md`](references/details.md)

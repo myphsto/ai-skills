@@ -196,8 +196,6 @@ ls /var/backups/<app>/              # safety backup always created first
 
 - [`references/backup-strategy.md`](references/backup-strategy.md)
 - [`references/restore-procedures.md`](references/restore-procedures.md)
-- `../../docs/continuous-improvement/two-family-validation-and-recovery.md`
-- `../../docs/continuous-improvement/incident-learning-standard.md`
 - [`references/details.md`](references/details.md)
 
 **Always confirm before restoring.** A restore overwrites existing data.

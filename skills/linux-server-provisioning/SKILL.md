@@ -38,8 +38,7 @@ for SELinux. Workstation-only AppImage package baselines are owned by
 [`linux-package-management`](../linux-package-management/SKILL.md); add them
 only when the target host is a desktop/workstation, not a headless production
 server. In `sk-*` scripts use the `common.sh` primitives (`pkg_install`,
-`ensure_epel`, `firewall_allow`, `svc_name`) instead of hardcoding. Plan:
-`docs/multi-distro/plan.md`.
+`ensure_epel`, `firewall_allow`, `svc_name`) instead of hardcoding.
 
 ## Use when
 

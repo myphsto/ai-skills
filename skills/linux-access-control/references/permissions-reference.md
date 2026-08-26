@@ -242,7 +242,7 @@ stop you from removing it easily.
 | `/etc/gshadow`                | 640  | root:shadow   | Never world-readable         |
 | `/etc/sudoers`                | 440  | root:root     | `visudo` enforces this       |
 | `/etc/sudoers.d/*`            | 440  | root:root     | Same                         |
-| `/etc/ssh/sshd_config`        | 600  | root:root     | Keys + auth config           |
+| `/etc/ssh/sshd_config`        | 644  | root:root     | Stock on Ubuntu; tighten to 600 if it holds secrets (repair pattern below) |
 | `/etc/ssh/ssh_host_*_key`     | 600  | root:root     | Host private keys            |
 | `/etc/ssh/ssh_host_*_key.pub` | 644  | root:root     | Host public keys             |
 | `/etc/cron.d/`                | 755  | root:root     | Dir                          |

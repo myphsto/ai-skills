@@ -143,6 +143,11 @@ docker builder prune            # build cache
 > including ones you stopped to investigate. Always run `docker system prune`
 > (no `-a`) first, and never auto-prune `--volumes` on a stateful host.**
 
+> **Prune commands prompt for confirmation interactively.** In non-interactive
+> contexts (scripts, agents, timers) add `-f` only after the scope above has
+> been approved — an unanswered prompt also consumes the rest of a piped
+> script's stdin, silently aborting everything after it.
+
 Podman is the same surface:
 
 ```bash

@@ -237,6 +237,7 @@ works for both NFS and CIFS):
 ```bash
 # /etc/auto.master :  /cifs  /etc/auto.cifs  --timeout=60
 # /etc/auto.cifs   :  sambashare  -fstype=cifs,credentials=/root/.smbcredentials,vers=3.0  ://server2/sambashare
+sudo mkdir -p /cifs                # automount does not create the mountpoint itself
 sudo systemctl enable --now autofs
 ```
 

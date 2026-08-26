@@ -118,6 +118,14 @@ sudo rkhunter --versioncheck           # is rkhunter itself current?
 `--update` may report "Update failed" if the mirror list is stale on an older
 package; that is non-fatal — the local checks still run.
 
+**Debian/Ubuntu note:** the packaged rkhunter ships
+`WEB_CMD="/bin/false"` in `/etc/rkhunter.conf`, so `--update` and
+`--versioncheck` cannot fetch anything by default (a security default that
+prevents automatic downloads). Set `WEB_CMD=/usr/bin/curl` in
+`/etc/rkhunter.conf.local` if you want online definition updates; until then
+the package's shipped definitions are used. `--propupd` and `--check` work
+normally against them.
+
 ---
 
 ## rkhunter: first run and the property baseline
@@ -412,8 +420,7 @@ fail2ban/AIDE/auditd:
   rkhunter warns on `/usr/sbin/sshd` and AIDE *also* shows a hash change on
   the same file, that correlation is strong. Run `sk-file-integrity-check`
   (this skill) on the same paths the scanner flagged.
-- **Attribute with auditd.** When a binary changed, `ausearch -f <path>` (see
-  `references/aide-and-auditd.md`) tells you which process and `auid` touched
+- **Attribute with auditd.** When a binary changed, `ausearch -f <path>` tells you which process and `auid` touched
   it and when — the *who/when* the scanners cannot give you.
 - **Baseline discipline mirrors AIDE.** `rkhunter --propupd` is to rkhunter
   what `aideinit` is to AIDE: only re-baseline after confirmed-legitimate

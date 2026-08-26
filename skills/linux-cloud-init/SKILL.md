@@ -144,8 +144,8 @@ network-config v2, and group `wheel` on RHEL). See
 # Built-in schema check (requires cloud-init installed)
 cloud-init schema --config-file user-data.yaml
 
-# With verbose output
-cloud-init schema --config-file user-data.yaml --strict
+# Validate a network-config file instead of cloud-config
+cloud-init schema --config-file network-config.yaml --schema-type network-config
 
 # YAML syntax check first (basic)
 yamllint user-data.yaml
@@ -224,7 +224,7 @@ see [`references/debugging.md`](references/debugging.md).
 yamllint user-data.yaml
 
 # 2. cloud-init schema validation
-cloud-init schema --config-file user-data.yaml --strict
+cloud-init schema --config-file user-data.yaml
 
 # 3. Visual review of the modules it will run
 grep -E '^[a-z_]+:' user-data.yaml

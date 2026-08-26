@@ -178,7 +178,6 @@ All log file locations: `references/log-locations.md`
 
 ## References
 
-- `../../docs/continuous-improvement/incident-learning-standard.md`
 - [`references/journalctl-reference.md`](references/journalctl-reference.md)
 - [`references/log-analysis-patterns.md`](references/log-analysis-patterns.md)
 - [`references/log-locations.md`](references/log-locations.md)

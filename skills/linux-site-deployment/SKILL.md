@@ -33,7 +33,7 @@ SELinux context or it serves 403s despite correct unix permissions:
 See [`../linux-webstack/references/httpd-reference.md`](../linux-webstack/references/httpd-reference.md)
 and [`../linux-virtualization/references/selinux-reference.md`](../linux-virtualization/references/selinux-reference.md).
 In `sk-*` scripts use `svc_name`, `web_conf_dir`, `web_reload`, `firewall_allow`
-from `common.sh`. Plan: `docs/multi-distro/plan.md`.
+from `common.sh`.
 
 ## Use when
 

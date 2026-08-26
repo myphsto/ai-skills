@@ -91,7 +91,7 @@ If decrypt fails:
 ```bash
 cat ~/.backup-encryption-key    # not empty?
 ls -la ~/.backup-encryption-key # mode 600?
-file mysql-backup_20260410-0200.tar.gz.gpg   # "GPG symmetrically encrypted data"
+file mysql-backup_20260410-0200.tar.gz.gpg   # "PGP symmetric key encrypted data"
 ```
 
 ### Step 3: Extract and inspect
@@ -115,6 +115,17 @@ mysql -e "USE <db>_restore_scratch; SHOW TABLES; SELECT COUNT(*) FROM <biggest-t
 
 If the scratch restore looks correct, proceed. If not, stop — the backup is
 corrupt or from the wrong window.
+
+**If the dump was made with `mysqldump --databases <db>` or
+`--all-databases`**, it contains `CREATE DATABASE`/`USE` statements that
+override the target database — the import would land in the *original* DB,
+silently defeating the scratch check. Strip them first:
+
+```bash
+sed -e 's/^USE [^;]*;/USE <db>_restore_scratch;/' \
+    -e '/^CREATE DATABASE/d' dump_20260410-0200/<db-name>.sql \
+    | mysql
+```
 
 ### Step 5: Restore into production
 

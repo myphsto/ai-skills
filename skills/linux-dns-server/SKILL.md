@@ -143,8 +143,10 @@ sudo apt install bind9 bind9-utils dnsutils
 #   /var/lib/bind/                 — dynamic state (slaves, journals)
 #   /var/log/                      — if you configure file logging
 
-sudo systemctl status bind9 --no-pager
-sudo journalctl -u bind9 -n 50 --no-pager
+# Unit is named.service on Debian/Ubuntu (bind9 is an alias: works with
+# systemctl, but NOT with journalctl — logs are recorded under `named`).
+sudo systemctl status named --no-pager
+sudo journalctl -u named -n 50 --no-pager
 ```
 
 ### Validate and reload
@@ -236,7 +238,7 @@ dig @master.example.com  example.com SOA +short | awk '{print $3}'
 dig @slave.example.com   example.com SOA +short | awk '{print $3}'
 
 # If they differ after a master reload:
-sudo journalctl -u bind9 -n 100 --no-pager | grep -i -E "transfer|notify"
+sudo journalctl -u named -n 100 --no-pager | grep -i -E "transfer|notify"
 # Look for: "transfer of 'example.com/IN' from ...: failed"
 # Common cause: slave firewall blocks 53/tcp (AXFR is TCP)
 
@@ -294,7 +296,7 @@ dig @127.0.0.1 -x 192.0.2.10 +short
   Disable resolved's stub listener: `DNSStubListener=no` in
   `/etc/systemd/resolved.conf`, then `systemctl restart systemd-resolved`.
 - **Logs going to syslog with nothing in `/var/log/named.log`.** BIND
-  defaults to syslog (`journalctl -u bind9`). File logging requires
+  defaults to syslog (`journalctl -u named`). File logging requires
   explicit `logging { ... }` stanzas — see the reference.
 
 ---

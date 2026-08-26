@@ -33,8 +33,7 @@ site. Full detail: [`references/httpd-reference.md`](references/httpd-reference.
 
 In `sk-*` scripts use `svc_name apache`, `web_conf_dir apache`, and
 `web_reload apache` from `common.sh` instead of hardcoding. See
-[`references/httpd-reference.md`](references/httpd-reference.md) and
-`docs/multi-distro/plan.md`.
+[`references/httpd-reference.md`](references/httpd-reference.md).
 
 ## Use when
 

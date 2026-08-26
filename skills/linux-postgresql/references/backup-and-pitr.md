@@ -100,7 +100,9 @@ sudo systemctl stop postgresql
 sudo mv /var/lib/pgsql/data /var/lib/pgsql/data.broken
 
 # 2. Restore the base backup into the (empty) data dir.
-sudo install -d -o postgres -g postgres /var/lib/pgsql/data
+#    -m 700 is required: install -d defaults to 0755 (umask 022), which
+#    PostgreSQL rejects ("data directory has invalid permissions").
+sudo install -d -m 700 -o postgres -g postgres /var/lib/pgsql/data
 sudo -u postgres tar -xzf /backup/base/base.tar.gz -C /var/lib/pgsql/data
 #   (extract pg_wal.tar.gz into the pg_wal/ subdir too if present)
 ```
@@ -113,7 +115,8 @@ file (PostgreSQL 12+ replaced the old `recovery.conf` with parameters in
 # postgresql.conf
 restore_command = 'cp /var/lib/pgsql/wal_archive/%f %p'
 recovery_target_time = '2026-06-15 14:29:59'   # stop just before the disaster
-# recovery_target_action = 'promote'           # promote when target reached (default)
+# recovery_target_action = 'promote'           # default is 'pause': server stops
+                                               # at the target and waits for pg_promote()
 ```
 
 ```bash
@@ -122,8 +125,10 @@ sudo systemctl start postgresql
 ```
 
 PostgreSQL replays archived WAL via `restore_command` up to
-`recovery_target_time`, then (with the default `promote` action) opens the
-database for writes and removes `recovery.signal`. Other targets:
+`recovery_target_time`. With the default `recovery_target_action = 'pause'`
+the server then **pauses** at the target: verify state, run
+`SELECT pg_promote();` to open it for writes (it removes `recovery.signal`).
+Set `recovery_target_action = 'promote'` to auto-promote instead. Other targets:
 `recovery_target_lsn`, `recovery_target_xid`, `recovery_target_name` (a label set
 earlier with `pg_create_restore_point`).
 

@@ -35,8 +35,7 @@ Alma, Oracle) equivalents are in the matrix.
 
 In `sk-*` scripts, resolve unit names with the `svc_name` helper from
 `common.sh` (e.g. `svc_name apache` → `apache2` or `httpd`) instead of
-hardcoding — see [`linux-bash-scripting`](../linux-bash-scripting/SKILL.md) and
-`docs/multi-distro/plan.md`.
+hardcoding.
 
 ## Use when
 
@@ -225,8 +224,6 @@ For creating a new Node.js systemd unit, see `linux-webstack`.
 
 ## References
 
-- `../../docs/continuous-improvement/safe-reversible-operations-standard.md`
-- `../../docs/continuous-improvement/incident-learning-standard.md`
 - [`references/service-reference.md`](references/service-reference.md)
 - [`references/timers-and-cron.md`](references/timers-and-cron.md)
 - [`references/resource-control-and-targets.md`](references/resource-control-and-targets.md)

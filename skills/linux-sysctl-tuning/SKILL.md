@@ -144,6 +144,13 @@ sysctl net.ipv4.tcp_available_congestion_control     # must list 'bbr'
 sudo modprobe tcp_bbr                                 # load if absent
 ```
 
+> **`default_qdisc` only affects newly created interfaces.** On Ubuntu the
+> existing NICs already carry `fq_codel` (from `/etc/sysctl.d/10-bufferbloat.conf`),
+> so after setting `net.core.default_qdisc = fq` you must also switch the live
+> interface: `tc qdisc replace dev <if> root fq` (restore with
+> `tc qdisc replace dev <if> root fq_codel`). Verify with
+> `tc qdisc show dev <if>`.
+
 ## Connection scaling
 
 ```bash

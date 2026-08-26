@@ -238,11 +238,17 @@ The kernel gates non-root perf access via this sysctl. Values:
 
 | Value | Allows (non-root) |
 |---|---|
+| `4` | user-space only, no CPU cycle counters (default on kernels ≥ 6.14, e.g. Ubuntu 24.04 HWE) |
 | `3` | nothing (some hardened Debian/Ubuntu defaults) |
-| `2` | user-space measurements only (common default) |
+| `2` | user-space measurements only (older default) |
 | `1` | + kernel profiling |
 | `0` | + raw tracepoints / per-CPU |
 | `-1` | no restrictions |
+
+On VMs without hardware PMU passthrough, hardware counters (`cpu-cycles`,
+`cache-misses`) report `<not supported>` even as root — software events
+(`context-switches`, `task-clock`) still work, so bound profiling with
+`-F` and `-- clock`-based events.
 
 ```bash
 sysctl kernel.perf_event_paranoid          # check current
