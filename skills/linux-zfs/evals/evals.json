@@ -1,0 +1,29 @@
+{
+  "skill_name": "linux-zfs",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I have four 16 TB enterprise drives sitting unformatted on a Rocky Linux 9 box. I want a pool for offsite backups that survives one drive failing. What would you build?",
+      "expected_output": "Runs lsblk/blkid to confirm the drives are unformatted and confirms the wipe explicitly. Chooses two mirrors (tolerates one failure per mirror) or explains RAIDZ1 tradeoffs for 4 disks, states failure tolerance in plain language, creates the pool with compression=lz4, verifies with zpool status + test I/O, and schedules a monthly scrub. Mentions the EPEL kmod-zfs kernel-module check after kernel updates.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Can I take a snapshot of my zfs dataset and roll back if I botch a config change tonight?",
+      "expected_output": "Reads references/zfs-reference.md. Shows zfs snapshot with a sortable name, explains that rollback is destructive to changes made after the snapshot (confirms first), shows clone as a non-destructive alternative for testing, and verifies with zfs list -t snapshot before and after.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "My zpool status says DEGRADED and one disk shows offline. The pool holds production data. What do I do, in order?",
+      "expected_output": "Stops provisioning work on the pool. Runs zpool status -v and dmesg to identify the failed device, checks failure tolerance for the layout, replaces the disk with zpool replace and watches the resilver, does not destroy or re-create anything, runs a scrub after the resilver completes, and verifies zpool status is ONLINE with no FAILED devices before declaring it healthy.",
+      "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Our database VM on a Proxmox zfspool has terrible sync-write latency. The pool is all HDDs and we have an unused NVMe. What would you tune, and in what order?",
+      "expected_output": "Reads references/zfs-tuning.md. First measures (zpool iostat -v, ARC stats) instead of blindly adding hardware. Recommends a SLOG on the NVMe sized 8-16GB with high endurance since the workload has sustained sync writes, checks zfs_arc_max isn't starving the workload, and warns that L2ARC would not help sync writes (read-only cache) and that sync=disabled trades durability for speed and needs explicit acceptance. Notes volblocksize can't be changed on the existing zvol, and schedules verification of the latency improvement before and after.",
+      "files": []
+    }
+  ]
+}

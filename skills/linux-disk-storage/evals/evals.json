@@ -1,0 +1,23 @@
+{
+  "skill_name": "linux-disk-storage",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm investigating disk pressure, inode exhaustion, or storage-related outages on an Ubuntu 24.04 server. Where should I start?",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/cifs-and-network-mounts.md, references/cleanup-patterns.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm cleaning up safe space hogs on a Debian 12 server. What's the safe way to do this without taking anything down?",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/cifs-and-network-mounts.md, references/cleanup-patterns.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I'm adding swap on a host that is currently running without one on a Rocky Linux 9 server. Walk me through it step by step.",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/cifs-and-network-mounts.md, references/cleanup-patterns.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    }
+  ]
+}

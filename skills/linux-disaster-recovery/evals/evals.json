@@ -1,0 +1,23 @@
+{
+  "skill_name": "linux-disaster-recovery",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I need to data has been lost, corrupted, or overwritten and a restore may be required on an Ubuntu 24.04 server. Where should I start?",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/backup-strategy.md, references/restore-procedures.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I need to you need to recover databases, application files, or config snapshots from backups on a Debian 12 server. What's the safe way to do this without taking anything down?",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/backup-strategy.md, references/restore-procedures.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I need to you need an emergency recovery checklist during a production incident on a Rocky Linux 9 server. Walk me through it step by step.",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/backup-strategy.md, references/restore-procedures.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    }
+  ]
+}

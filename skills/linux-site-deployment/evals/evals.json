@@ -1,0 +1,23 @@
+{
+  "skill_name": "linux-site-deployment",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm deploying a new website to the standard Nginx plus Apache server model in this repo on an Ubuntu 24.04 server. Where should I start?",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/apache-backend.md, references/deployment-checklist.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm adding a static site, PHP app, or Astro/PHP hybrid to an existing host on a Debian 12 server. What's the safe way to do this without taking anything down?",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/apache-backend.md, references/deployment-checklist.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I'm issuing TLS and registering the repo in the repo-update workflow as part of deployment on a Rocky Linux 9 server. Walk me through it step by step.",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/apache-backend.md, references/deployment-checklist.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    }
+  ]
+}

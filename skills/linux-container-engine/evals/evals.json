@@ -1,0 +1,23 @@
+{
+  "skill_name": "linux-container-engine",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm installing Docker or Podman on a fresh host (either family) on an Ubuntu 24.04 server. Where should I start?",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/container-engine-reference.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm choosing between the Docker daemon and rootless Podman for a workload on a Debian 12 server. What's the safe way to do this without taking anything down?",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/container-engine-reference.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I'm writing or auditing `/etc/docker/daemon.json` or `/etc/containers/registries.conf` on a Rocky Linux 9 server. Walk me through it step by step.",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/container-engine-reference.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    }
+  ]
+}

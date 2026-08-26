@@ -1,0 +1,23 @@
+{
+  "skill_name": "linux-dns-server",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I'm managing authoritative DNS zones, records, serials, or server reloads on an Ubuntu 24.04 server. Where should I start?",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/bind9-reference.md, references/zone-file-syntax.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "I'm validating zone files or setting up reverse DNS on Ubuntu/Debian on a Debian 12 server. What's the safe way to do this without taking anything down?",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/bind9-reference.md, references/zone-file-syntax.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    },
+    {
+      "id": 3,
+      "prompt": "I'm debugging BIND9 or unbound behavior on a server that owns DNS service on a Rocky Linux 9 server. Walk me through it step by step.",
+      "expected_output": "Checks /etc/os-release and picks the right family commands before running anything. Reads references/bind9-reference.md, references/zone-file-syntax.md for the detailed procedure. Guides the task with standard tools, validates configuration before any reload or restart, asks for confirmation before destructive steps, and verifies the end state (service status, config, or output) before declaring success.",
+      "files": []
+    }
+  ]
+}

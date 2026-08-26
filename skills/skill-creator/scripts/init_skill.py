@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# /// script
+# requires-python = ">=3.9"
+# ///
 """
 Skill Initializer - Creates a new skill from template
 
