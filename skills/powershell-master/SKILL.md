@@ -77,7 +77,8 @@ Install-Module -Name Az -Scope CurrentUser -Force
 # Use -Filter parameter when available
 Get-ChildItem -Path C:\ -Filter *.log -Recurse
 
-# ArrayList vs Array
+# Collect array items (pre-7.5: ArrayList/List avoid per-append reallocation)
+# On PowerShell 7.5+ the += array-append optimization (~20x vs 7.4) makes += fine too
 $list = [System.Collections.ArrayList]::new()
 1..1000 | ForEach-Object { [void]$list.Add($_) }
 ```
@@ -180,7 +181,11 @@ Import-Module -Name Az
 
 ### Array Concatenation Performance
 ```powershell
-# Good: Use ArrayList or List
+# PowerShell 7.5+ : optimized += is fast (~20x vs 7.4); prefer += for clarity
+$items = @()
+foreach ($i in 1..10000) { $items += $i }
+
+# Pre-7.5: += reallocates the array every iteration - use List<T> or ArrayList
 $list = [System.Collections.Generic.List[object]]::new()
 $list.Add($item)
 ```

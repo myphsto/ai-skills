@@ -1,6 +1,6 @@
 ---
 name: powershell-2025-changes
-description: "PowerShell breaking changes, retired modules, and migration guidance. Activate when: (1) scripts fail due to retired MSOnline/AzureAD modules, (2) WMIC commands are missing, (3) Test-Json schema validation breaks, (4) PSSnapin requirements fail. DO NOT activate for current PowerShell features (use powershell-7.5-features), security hardening (use powershell-security), or general PowerShell scripting (use powershell-master)."
+description: "PowerShell breaking changes, retired modules, and migration guidance. Activate when: (1) scripts fail due to retired MSOnline/AzureAD modules, (2) WMIC commands are missing, (3) Test-Json schema validation breaks, (4) PSSnapin requirements fail. DO NOT activate for current PowerShell features (use powershell-75-features), security hardening (use powershell-security), or general PowerShell scripting (use powershell-master)."
 license: MIT
 compatibility: "Windows with PowerShell 5.1 or 7+; PowerShell 7.4+ for Test-Json and PSSnapin changes"
 metadata:
@@ -96,6 +96,6 @@ Test-Path $PSCommandPath
 
 ## Related Skills
 
-- **Current PowerShell 7.5/7.6 features:** `powershell-7.5-features`
+- **Current PowerShell 7.5/7.6 features:** `powershell-75-features`
 - **Security hardening (JEA, WDAC, SecretManagement):** `powershell-security`
 - **General PowerShell scripting:** `powershell-master`

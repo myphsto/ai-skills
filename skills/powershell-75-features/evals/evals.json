@@ -24,6 +24,18 @@
       "prompt": "I'm upgrading from PowerShell 7.4 to 7.5. Will my existing scripts break?",
       "expected_output": "States that PowerShell 7.5 maintains backward compatibility with 7.0-7.4 scripts. New parameters are opt-in. No breaking changes to existing cmdlets. Module compatibility preserved.",
       "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Is PowerShell 7.6 still in preview? I heard the += operator got a 16x speedup in 7.6.",
+      "expected_output": "Corrects both claims. 7.6 is GA/stable (current 7.6.5, .NET 10, LTS; 7.5.10 is the standard 7.5 line). The += array-append optimization landed in 7.5, not 7.6 (measured ~20x vs 7.4; 7.6 is flat vs 7.5). Directs to references/powershell-7.6-features.md for the version table and measured benchmark table.",
+      "files": []
+    },
+    {
+      "id": 6,
+      "prompt": "What is actually new in PowerShell 7.6? And do I need ConvertFrom-Json -IgnoreComments for JSON with comments?",
+      "expected_output": "Lists the 7.6-only features verified in the skill: Get-Clipboard -Delimiter and Get-Command -ExcludeModule. States that -IgnoreComments/-AllowTrailingCommas do NOT exist on ConvertFrom-Json/Test-Json; relaxed JSON is Test-Json -Options IgnoreComments/AllowTrailingCommas and ConvertFrom-Json -DateKind, both 7.5+. Also covers the bundled-not-invented DSC v3 and experimental-feature facts as relevant.",
+      "files": []
     }
   ]
 }

@@ -2,7 +2,7 @@
 
 Full usage examples, performance data, and 7.4 → 7.5 migration patterns for PowerShell 7.5.
 
-Related: [cicd-benchmarks.md](cicd-benchmarks.md) (CI/CD integration, .NET 9 benchmark details), [powershell-7.6-preview.md](powershell-7.6-preview.md) (7.6 preview features).
+Related: [cicd-benchmarks.md](cicd-benchmarks.md) (CI/CD integration, .NET 9 benchmark details), [powershell-7.6-features.md](powershell-7.6-features.md) (7.6 features).
 
 ## Contents
 
@@ -13,7 +13,7 @@ Related: [cicd-benchmarks.md](cicd-benchmarks.md) (CI/CD integration, .NET 9 ben
   - [Enhanced Test-Json Cmdlet](#enhanced-test-json-cmdlet)
   - [Enhanced Resolve-Path and Convert-Path](#enhanced-resolve-path-and-convert-path)
   - [New-FileCatalog Version 2 Default](#new-filecatalog-version-2-default)
-- [PSResourceGet 1.1.1 (March 2025)](#psresourceget-111-march-2025)
+- [PSResourceGet](#psresourceget)
 - [Migration from PowerShell 7.4](#migration-from-powershell-74)
 - [Best Practices for PowerShell 7.5](#best-practices-for-powershell-75)
 - [Backward Compatibility](#backward-compatibility)
@@ -48,7 +48,9 @@ $restored.ProcessName  # Outputs: pwsh
 
 #### -OlderThan and -NewerThan Parameters
 
-Filter paths by modification time:
+Filter paths by modification time.
+
+**Note:** these parameters are not new in 7.5 — they date back to **Windows PowerShell 3.0** (verified working on 7.4.19 and later).
 
 ```powershell
 # Find files older than 30 days
@@ -77,7 +79,9 @@ Get-ChildItem "C:\Users\*\Downloads" -Recurse |
 
 #### -PassThru with -OutFile
 
-Save response to file AND return content:
+Save response to file AND return content.
+
+**Note:** combining `-OutFile` with `-PassThru` already works in **7.4.19**, so it is not new in 7.5.
 
 ```powershell
 # Before PowerShell 7.5 (choose one):
@@ -106,55 +110,42 @@ Write-Host "Downloaded $($result.Length) bytes"
 
 ### Enhanced Test-Json Cmdlet
 
-#### IgnoreComments and AllowTrailingCommas
+#### -Options (relaxed JSON) and ConvertFrom-Json -DateKind
 
-Parse relaxed JSON formats:
+Relaxed JSON support landed in 7.5 as **enum options on `Test-Json`**, not as `-IgnoreComments`/`-AllowTrailingCommas` parameters (those do not exist on `ConvertFrom-Json` or `Test-Json`).
 
 ```powershell
-# JSON with comments (previously invalid)
-$jsonWithComments = @"
-{
-  // This is a comment
-  "name": "example",  // inline comment
-  /* Multi-line
-     comment */
-  "version": "1.0"
-}
-"@
+# Validate JSON that contains comments (7.5+)
+Test-Json -Json $jsonWithComments -Options IgnoreComments
 
-# PowerShell 7.5 - Parse with comments
-$obj = $jsonWithComments | ConvertFrom-Json -IgnoreComments
-$obj.name  # Outputs: example
+# Validate JSON with trailing commas (7.5+)
+Test-Json -Json $jsonTrailing -Options AllowTrailingCommas
 
-# JSON with trailing commas (previously invalid)
-$jsonTrailing = @"
-{
-  "items": [
-    "first",
-    "second",  // trailing comma
-  ],
-}
-"@
+# Both relaxed options together
+Test-Json -Json $relaxedJson -Options IgnoreComments, AllowTrailingCommas
+```
 
-# PowerShell 7.5 - Parse with trailing commas
-$obj = $jsonTrailing | ConvertFrom-Json -AllowTrailingCommas
+`ConvertFrom-Json` gained **`-DateKind`** in 7.5 to control how string dates are converted:
 
-# Validate JSON with relaxed syntax
-Test-Json -Json $jsonWithComments -IgnoreComments
-Test-Json -Json $jsonTrailing -AllowTrailingCommas
+```powershell
+# Interpret dates as UTC
+$obj = $json | ConvertFrom-Json -DateKind Utc
+
+# Interpret dates as local
+$obj = $json | ConvertFrom-Json -DateKind Local
 ```
 
 **Use Cases:**
-- Parse configuration files with comments
-- Handle JSON from JavaScript tools
-- Accept relaxed JSON from APIs
+- Validate configuration files with comments (JSONC)
+- Accept relaxed JSON from JavaScript tools
+- Control date-parse semantics when reading JSON
 - Config file validation
 
 ### Enhanced Resolve-Path and Convert-Path
 
 #### -Force Parameter for Wildcard Hidden Files
 
-Access hidden/system files with wildcards:
+Access hidden/system files with wildcards. Verified: the **`-Force` parameter is new in 7.5** (absent in 7.4.19), covering both `Resolve-Path` and `Convert-Path`:
 
 ```powershell
 # PowerShell 7.4 and earlier - Hidden files not matched
@@ -181,12 +172,12 @@ Convert-Path "~/.config/*" -Force
 
 ### New-FileCatalog Version 2 Default
 
-FileCatalog version 2 is now default:
+`New-FileCatalog` supports a `-CatalogVersion` parameter (there is **no** `-Force` parameter). Version 2 uses SHA256 and is the default in PowerShell 7.x.
 
 ```powershell
-# PowerShell 7.5 - Version 2 by default
+# Version 2 by default in 7.x
 New-FileCatalog -Path "C:\Project" -CatalogFilePath "catalog.cat"
-# Creates version 2 catalog (SHA256)
+# Creates a version 2 catalog (SHA256)
 
 # Explicitly specify version
 New-FileCatalog -Path "C:\Project" `
@@ -201,24 +192,26 @@ Test-FileCatalog -Path "C:\Project" -CatalogFilePath "catalog.cat"
 - Version 1: SHA1 hashing (legacy)
 - Version 2: SHA256 hashing (default, more secure)
 
-## PSResourceGet 1.1.1 (March 2025)
+Verified: catalogs written with `-CatalogVersion 2` embed the SHA256 object identifier (and no MD5 OID); version 1 catalogs contain neither. There is no `Get-FileCatalog` cmdlet.
+
+## PSResourceGet
 
 ### Modern Package Management
 
-PSResourceGet is the official successor to PowerShellGet, offering significant performance improvements and enhanced security.
+PSResourceGet is the official successor to PowerShellGet and is **bundled with PowerShell 7.4+**. It is a coordinated separate release, so the exact version varies by install (check with `Get-Module ... -ListAvailable`; do not assume a specific number).
 
 **Key Features:**
-- **2x faster** module installation
-- **Improved security** - SecretManagement integration for secure credential storage
-- **Azure Artifacts support** - Enterprise private feed integration
-- **Better error handling** - Clearer error messages and retry logic
+- **Faster module metadata operations** (install/search/update) than module 1.x PowerShellGet
+- **SecretManagement integration** for secure credential storage
+- **Azure Artifacts support** - enterprise private feed integration
+- **Better error handling** - clearer error messages and retry logic
 
 ```powershell
-# Install PSResourceGet (included in PowerShell 7.4+)
-Install-Module -Name Microsoft.PowerShell.PSResourceGet -Force
+# Check what ships in this install (version varies)
+Get-Module Microsoft.PowerShell.PSResourceGet -ListAvailable
 
 # New commands
-Install-PSResource -Name Az -Scope CurrentUser  # 2x faster than Install-Module
+Install-PSResource -Name Az -Scope CurrentUser
 Find-PSResource -Name "*Azure*"                 # Replaces Find-Module
 Update-PSResource -Name Az                      # Replaces Update-Module
 Get-InstalledPSResource                         # Replaces Get-InstalledModule
@@ -232,13 +225,6 @@ Register-PSResourceRepository -Name "PrivateFeed" `
 $credential = Get-Secret -Name "AzureArtifactsToken" -AsPlainText
 Install-PSResource -Name "MyPrivateModule" -Repository "PrivateFeed" -Credential $credential
 ```
-
-**Performance Comparison:**
-| Operation | PowerShellGet | PSResourceGet 1.1.1 | Improvement |
-|-----------|--------------|---------------------|-------------|
-| Install module | 10-15s | 5-7s | 2x faster |
-| Search modules | 3-5s | 1-2s | 2-3x faster |
-| Update module | 12-18s | 6-9s | 2x faster |
 
 **Security Enhancements:**
 - Never use plaintext credentials in scripts
@@ -266,15 +252,15 @@ Install-PSResource -Name "Module" -Repository "Feed" -Credential $token
 ```powershell
 # Current version
 $PSVersionTable.PSVersion
-# 7.5.4 (latest stable as of October 2025)
+# 7.5.10 (latest 7.5 LTS)
 
 # .NET version
 [System.Runtime.InteropServices.RuntimeInformation]::FrameworkDescription
-# .NET 9.0.306
+# .NET 9.x
 
 # PSResourceGet version
 Get-Module Microsoft.PowerShell.PSResourceGet -ListAvailable
-# Version 1.1.1 (latest as of March 2025)
+# Version varies per install (keep this check, don't hardcode)
 ```
 
 ### Update Scripts for 7.5
@@ -346,11 +332,15 @@ if ($response.StatusCode -eq 200) {
 }
 ```
 
-5. **Parse relaxed JSON:**
+5. **Validate relaxed JSON with Test-Json -Options:**
 ```powershell
-# Configuration files with comments
-$config = Get-Content "config.jsonc" -Raw |
-  ConvertFrom-Json -IgnoreComments
+# Configuration files with comments (JSONC)
+Test-Json -Json (Get-Content "config.jsonc" -Raw) -Options IgnoreComments
+```
+
+6. **Control date parsing with ConvertFrom-Json -DateKind:**
+```powershell
+$req = Get-Content "response.json" -Raw | ConvertFrom-Json -DateKind Utc
 ```
 
 ## Backward Compatibility

@@ -23,30 +23,29 @@
 
 ## Performance Benchmarks
 
-| Operation | PowerShell 7.4 | PowerShell 7.5 | Improvement |
-|-----------|---------------|---------------|-------------|
-| Startup time | 1.2s | 0.9s | 25% faster |
-| Large pipeline | 2.5s | 1.8s | 28% faster |
-| Memory usage | 120MB | 95MB | 21% lower |
-| Web requests | 450ms | 380ms | 16% faster |
+Measured locally on the same machine (median timings; use for relative comparison, not absolutes — timings vary by hardware):
 
-## .NET 9 Performance Enhancements
+| Operation | 7.4.19 | 7.5.10 | 7.6.5 | Improvement |
+|-----------|--------|--------|-------|-------------|
+| `+=` 10K appends | 557–566 ms | 24–28 ms | 25–29 ms | ~20x faster; a **7.5** feature |
+| Cold startup | ~0.20–0.21 s | ~0.19–0.23 s | ~0.21–0.22 s | flat — no real gain in 7.5 or 7.6 |
+| Large pipeline (100K) | 300–310 ms | 264–271 ms | 309–320 ms | small 7.5 gain (~12%); 7.6 back to 7.4 level |
+| Module loading (import) | 34–35 ms | 35–36 ms | 35–37 ms | negligible |
 
-PowerShell 7.5 benefits from .NET 9.0.306:
-- Faster startup time
-- Reduced memory consumption
-- Improved JIT compilation
-- Better garbage collection
+**Do not claim** startup, memory, or pipeline improvements in 7.6 — the measured data shows no such gains. Memory reductions are not substantiated by measured evidence here.
+
+## .NET 9 /.NET 10 Notes
+
+PowerShell 7.5 runs on .NET 9; PowerShell 7.6 runs on .NET 10 (verified `.NET 10.0.11` on 7.6.5). JIT/memory claims should be measured per workload; the timing table above is the safe reference.
 
 ```powershell
-# Example: Large dataset processing
-Measure-Command {
-  1..1000000 | ForEach-Object { $_ * 2 }
-}
-# PowerShell 7.4: ~2.5 seconds
-# PowerShell 7.5: ~1.8 seconds (28% faster)
+# Example: Large dataset processing (measured)
+Measure-Command { $r = 1..100000 | ForEach-Object { $_ * 2 } }
+# 7.4.19: ~300-310 ms
+# 7.5.10: ~264-271 ms (small gain)
+# 7.6.5:  ~309-320 ms (no gain over 7.4)
 
-# Monitor memory usage
-[System.GC]::GetTotalMemory($false) / 1MB
-# PowerShell 7.5 uses 15-20% less memory on average
+# The += optimization that matters most for aggregation loops landed in 7.5:
+Measure-Command { $a = @(); foreach ($i in 1..10000) { $a += $i } }
+# 7.4.19: ~560 ms   ->   7.5.10/7.6.5: ~25 ms  (~20x faster)
 ```

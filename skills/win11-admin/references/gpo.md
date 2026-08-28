@@ -66,7 +66,7 @@ Remove-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpda
 
 # --- DEFENDER ROLLBACK ---
 Set-MpPreference -EnableControlledFolderAccess Disabled
-Set-MpPreference -EnableNetworkProtection AuthenticatedUsers
+Set-MpPreference -EnableNetworkProtection Disabled
 Set-MpPreference -PUAProtection Disabled
 
 # --- LOCK SCREEN ROLLBACK ---

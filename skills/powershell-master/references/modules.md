@@ -1,11 +1,11 @@
 # Popular PowerShell Modules
 
-## Azure (Az Module 14.5.0)
+## Azure (Az module)
 
-**Latest:** Az 14.5.0 (October 2025) with zone redundancy and symbolic links
+**Latest:** check with `Find-PSResource -Name Az` — Az moves fast; never hardcode a version as "current".
 
 ```powershell
-# Install Azure module 14.5.0
+# Install the Azure module (latest by default)
 Install-PSResource -Name Az -Scope CurrentUser
 # Or: Install-Module -Name Az -Scope CurrentUser -Force
 
@@ -27,19 +27,19 @@ New-AzStorageFileSymbolicLink -Context $ctx -ShareName "nfsshare" `
 ```
 
 **Key Submodules:**
-- `Az.Accounts` - Authentication (MFA required Sep 2025+)
+- `Az.Accounts` - Authentication (module-level auth; unmanaged-user MFA enforcement is an Azure policy, not a PowerShell setting)
 - `Az.Compute` - VMs, scale sets
 - `Az.Storage` - Storage accounts (zone redundancy support)
 - `Az.Network` - Virtual networks, NSGs
 - `Az.KeyVault` - Key Vault operations
 - `Az.Resources` - Resource groups, deployments
 
-## Microsoft Graph (Microsoft.Graph 2.32.0)
+## Microsoft Graph (Microsoft.Graph)
 
 **CRITICAL:** MSOnline and AzureAD modules retired (March-May 2025). Use Microsoft.Graph instead.
 
 ```powershell
-# Install Microsoft Graph 2.32.0 (October 2025)
+# Install Microsoft Graph (latest - check with Find-PSResource)
 Install-PSResource -Name Microsoft.Graph -Scope CurrentUser
 # Or: Install-Module -Name Microsoft.Graph -Scope CurrentUser
 
@@ -102,6 +102,7 @@ Install-Module -Name PSScriptAnalyzer
 # ImportExcel (Excel manipulation without Excel)
 Install-Module -Name ImportExcel
 
-# PowerShellGet 3.x (Modern package management)
-Install-Module -Name Microsoft.PowerShell.PSResourceGet
+# PSResourceGet (modern package management; bundled with PowerShell 7.4+,
+# separately versioned). Don't install it via legacy Install-Module - check it:
+Get-Module Microsoft.PowerShell.PSResourceGet -ListAvailable
 ```

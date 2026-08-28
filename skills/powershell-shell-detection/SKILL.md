@@ -38,7 +38,7 @@ if ($env:PSModulePath) {
 
 # Check PowerShell version
 $PSVersionTable.PSVersion
-# Output: 7.5.4 (PowerShell 7) or 5.1.x (Windows PowerShell)
+# Output: 7.6.5 (PowerShell 7) or 5.1.x (Windows PowerShell)
 ```
 
 **PowerShell-Specific Variables:**
