@@ -9,11 +9,14 @@ Restricts PowerShell language features to prevent malicious code execution.
 ```powershell
 # Check current language mode
 $ExecutionContext.SessionState.LanguageMode
-# Output: FullLanguage (admin) or ConstrainedLanguage (standard user)
+# Output: "FullLanguage" on a default Windows install (verified: Win11 25H2,
+# both PS 7.x and 5.1, admin AND standard-user sessions).
 
-# Set system-wide constrained language mode
-# Via Environment Variable or Group Policy
-# Set: __PSLockdownPolicy = 4
+# ConstrainedLanguage appears only when AppLocker/WDAC (Device Guard) policy is
+# in effect. NOTE: the legacy "__PSLockdownPolicy = 4" environment variable NO
+# LONGER forces CLM on current Windows (verified: no-op in PS 7.x and 5.1 on
+# Win11 25H2), and PowerShell 7 ignores the Windows PowerShell language-mode GPO
+# registry values. There is no per-process registry/env toggle on modern builds.
 
 # Test constrained mode behavior
 # FullLanguage allows:
@@ -30,7 +33,9 @@ Add-Type -TypeDefinition "..."  # Blocked
 
 ```powershell
 # Enable via Group Policy or Registry
+# The ScriptBlockLogging policy key does NOT exist by default - create it first.
 # HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging
+New-Item -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" -Force | Out-Null
 New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" `
      -Name "EnableScriptBlockLogging" -Value 1 -PropertyType DWord
 New-ItemProperty -Path "HKLM:\Software\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging" `

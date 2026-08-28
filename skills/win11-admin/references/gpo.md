@@ -18,6 +18,10 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name 
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Value 0
 Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "UploadUserActivities" -Value 0
 
+# Disable Copilot/AI analysis (ADMX: WindowsCopilot.admx, class Both)
+New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" -Force
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" -Name "DisableAIDataAnalysis" -Value 1
+
 # --- WINDOWS UPDATE ---
 # Configure Windows Update (0=NotConfigured, 1=Disabled, 2-5=various)
 New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Force
@@ -76,6 +80,7 @@ Remove-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Conte
 # --- COPILOT/RECALL ROLLBACK ---
 Remove-Item -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsCopilot" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "HKCU:\Software\Policies\Microsoft\Windows\WindowsAI" -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsAI" -Recurse -Force -ErrorAction SilentlyContinue
 ```
 
 ## Edit Local GPO with gpedit.msc

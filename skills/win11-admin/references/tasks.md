@@ -23,6 +23,9 @@ Unregister-ScheduledTask -TaskName "TaskName" -Confirm:$false
 Start-ScheduledTask -TaskName "TaskName"
 
 # Common telemetry tasks to disable
+# NOTE: on Win11 25H2 the Application Experience tasks (Microsoft Compatibility
+# Appraiser, ProgramDataUpdater) are ABSENT (verified) - Get-ScheduledTask simply
+# returns nothing for them, so always guard disable/remove calls.
 $telemetryTasks = @(
     "\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser"
     "\Microsoft\Windows\Application Experience\ProgramDataUpdater"

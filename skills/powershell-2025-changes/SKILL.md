@@ -50,7 +50,11 @@ wmic cpu get name         → Get-CimInstance Win32_Processor | Select Name
 
 ### Test-Json Schema (PowerShell 7.4+)
 
-Switched from Newtonsoft.Json.Schema to JsonSchema.NET. Draft 4 schemas no longer supported.
+Switched from Newtonsoft.Json.Schema to JsonSchema.NET. The `$schema` dialect is
+no longer honored the same way: simple draft-04 schemas still validate (verified
+on 7.6.x), but keyword forms that only exist in draft-04 (e.g. boolean
+`exclusiveMinimum`) throw `Cannot parse the JSON schema`. Migrate draft-04 schemas
+to draft-06+ to be safe.
 
 ```powershell
 # Update $schema URI from draft-04 to draft-06 or later
@@ -58,7 +62,11 @@ $schema = '{"$schema":"http://json-schema.org/draft-06/schema#","type":"object"}
 Test-Json -Json $json -Schema $schema
 ```
 
-### #Requires -PSSnapin Removed (PowerShell 7.4+)
+### #Requires -PSSnapin No Longer Enforced (PowerShell 7.4+)
+
+Snap-ins are legacy. In PowerShell 7.x a `#Requires -PSSnapin` is silently
+ignored and the script still runs; in 5.1 it blocks the script if the snap-in is
+missing (both verified on Win11 25H2). Migrate to module requirements.
 
 ```powershell
 # OLD

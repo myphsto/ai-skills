@@ -30,10 +30,11 @@ $bloatware = @(
     "Microsoft.XboxGamingOverlay"
     "Microsoft.XboxIdentityProvider"
     "Microsoft.XboxSpeechToTextOverlay"
-    "Microsoft.YourPhone"
+    "Microsoft.YourPhone"   # renamed Microsoft.PhoneLink on some 24H2+/25H2 builds
+    "Microsoft.PhoneLink"
     "Microsoft.ZuneMusic"
-    "Microsoft.ZuneVideo"
-    "MicrosoftTeams"
+    "Microsoft.ZuneVideo"   # absent on 25H2 builds (harmless no-op)
+    "MSTeams"   # packaged Teams on 23H2+; legacy "MicrosoftTeams" is gone on 25H2
     "Clipchamp.Clipchamp"
     "Microsoft.549981C3F5F10"  # Cortana
 )

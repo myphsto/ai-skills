@@ -44,6 +44,11 @@ $restored.ProcessName  # Outputs: pwsh
 - `Export-Clixml`: Writes to file
 - `ConvertTo-CliXml`: Returns string (no file I/O)
 
+**Availability:** these cmdlets are new in PowerShell 7.5+. They do not exist in
+Windows PowerShell 5.1 (verified absent on a patched Win11 25H2) or in 7.4.x, so
+feature-detect with `Get-Command ConvertTo-CliXml -ErrorAction SilentlyContinue`
+and fall back to `Export-Clixml` / `Import-Clixml` on older hosts.
+
 ### Enhanced Test-Path Cmdlet
 
 #### -OlderThan and -NewerThan Parameters

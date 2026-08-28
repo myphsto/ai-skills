@@ -18,6 +18,18 @@
       "prompt": "What's new in PowerShell 7.5? I want to know about the latest features.",
       "expected_output": "Delegates to powershell-75-features skill instead of answering from this skill. This skill is for breaking changes and migrations, not current features.",
       "files": []
+    },
+    {
+      "id": 4,
+      "prompt": "Test-Json started throwing 'Cannot parse the JSON schema' on our draft-04 schema files after we upgraded to 7.4. What happened?",
+      "expected_output": "Identifies the JsonSchema.NET engine switch (7.4+). Explains nuance: simple draft-04 schemas still validate, but draft-04-only keyword forms (e.g. boolean exclusiveMinimum) throw 'Cannot parse the JSON schema'. Recommends migrating the $schema URI to draft-06+ and shows the draft-06 schema example.",
+      "files": []
+    },
+    {
+      "id": 5,
+      "prompt": "Our script starts with '#Requires -PSSnapin Microsoft.Exchange.Management.PowerShell.SnapIn' and no longer loads the snap-in on the new server.",
+      "expected_output": "Explains #Requires -PSSnapin is legacy: on PowerShell 7.x it is silently ignored (script runs), on 5.1 it blocks if the snap-in is missing. Recommends migrating to '#Requires -Modules ExchangeOnlineManagement' with Import-Module.",
+      "files": []
     }
   ]
 }
